@@ -1,15 +1,10 @@
 let express = require('express');
 let app = express();
+let users = require('./routes/users.js');
+let expenses = require('./routes/expenses.js');
 
-
-let users = require('./controllers/users.js');
-let expenses = require('./controllers/expenses.js');
-
-
-// app.use(cors());
 app.use('/api/user', users);
 app.use('/api/expense', expenses);
-
 
 // to catch any other path and return 404
 app.use(function (req, res) {

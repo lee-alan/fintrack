@@ -38,7 +38,7 @@ router.get('/multiple/:month', function (req, res) {
     res.status(200).send(' GET in path /api/expense/multiple/:month in expenses controller');
 });
 
-// delete the expense by id and all assosiated comments
+// delete the expense by id and all associated comments
 router.delete('/:id', function (req, res) {
     console.log('DELETE path /api/expense/:id');
 
