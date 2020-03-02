@@ -57,7 +57,7 @@ router.post('/signin', async function (req, res) {
         hash.update(password);
         var saltedHash = hash.digest('base64');
         password = saltedHash;
-        if (user.password !== password) return res.status(401).end("access denied");
+        if (user.password !== password) return res.status(401).json({error: "access denied"});
         // initialize cookie
         res.setHeader('Set-Cookie', cookie.serialize('username', username, {
             path : '/',
