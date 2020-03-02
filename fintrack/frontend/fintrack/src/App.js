@@ -10,10 +10,11 @@ import ErrorPage from "./pages/error";
 
 import NavigationBar from "./components/mainNav";
 import SideNavigation from "./components/sideNav";
+//import DashBoard from "./pages/dashboard2";
 
 import axios from "axios";
 import SignupPage from "./pages/signup";
-import DashBoard from "./pages/dashboard";
+//import DashBoard from "./pages/dashboard";
 
 class App extends Component {
   state = {};
@@ -44,7 +45,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    this.checkAuth();
+    //this.checkAuth();
   }
   /**
    * <div class='flex'>
@@ -54,6 +55,7 @@ class App extends Component {
    */
   render() {
     //if (!this.state.isauth) return <h1>ERROR</h1>;
+    /*
     let sideNav = this.state.isauth ? <SideNavigation /> : "";
     // Determine swtich rules if authenticated or not
     let switchRule = (
@@ -94,14 +96,22 @@ class App extends Component {
           <Redirect to="/dashboard" />
         </Switch>
       );
-    }
+    }*/
     return (
+      <div>
+        <NavigationBar isauth={true} user="Ram" />
+      </div>
+    );
+
+    /**
+     *     return (
       <div>
         <NavigationBar isauth={this.state.isauth} user={this.state.user} />
         {sideNav}
         <div className="App">{switchRule}</div>
       </div>
     );
+     */
   }
 }
 
