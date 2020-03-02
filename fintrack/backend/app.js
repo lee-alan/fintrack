@@ -3,6 +3,14 @@ let app = express();
 let users = require('./routes/users.js');
 let expenses = require('./routes/expenses.js');
 
+const session = require('express-session');
+
+app.use(session({
+    secret: 'please change this secret',
+    resave: false,
+    saveUninitialized: true,
+}));
+
 app.use('/api/user', users);
 app.use('/api/expense', expenses);
 

@@ -2,9 +2,9 @@ const executeQuery = require('../dataAccess/mongoConnect').executeQuery;
 const db = "fintrack";
 const users_collection = "users";
 
-exports.add_user = async (username, email, password) => {
+exports.add_user = async (username, email, password, salt) => {
     return await executeQuery(db, async (db) => await db.collection(users_collection).insertOne(
-        {username: username, email: email, password: password}));
+        {username: username, email: email, password: password, salt: salt}));
 };
 
 exports.user_signin = async (username, password) => {
