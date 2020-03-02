@@ -3,25 +3,33 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
-
-//basic QA checkup
-router.get('/', function (req, res) {
-    console.log('GET path /api/expense/');
-
-    res.status(200).send('GET in path /api/expense in expenses controller');
-});
+const {add_expense, get_expense_by_id, delete_expense} = require("../dataAccess/expensesData");
 
 //create a new expense
-router.post('/', function (req, res) {
+router.post('/', async function (req, res) {
     console.log('POST path /expense/');
-
-    res.status(200).send(' POST in path api/expense/ in expenses controller');
+    const expense = {
+        username: req.body.username,
+        type: req.body.type,
+        amount: parseInt(req.body.amount),
+        date: new Date(),
+        payment_type: req.body.payment_type,
+        description: req.body.description
+    };
+    const result = await add_expense(expense);
+    if(result) {
+        return res.status(200).json(result.ops[0]);
+    }
+    return res.status(500).json({error: "Internal server error"});
 });
 //retrieve the expense by id
-router.get('/:id', function (req, res) {
+router.get('/', async function (req, res) {
     console.log('GET path /api/expense/:id');
-
-    res.status(200).send(' POST in path /api/expense/:id in expenses controller');
+    const expense = await get_expense_by_id(req.query.id);
+    if(expense){
+        return res.status(200).json(expense);
+    }
+    return res.status(404).json({error:`An expense with id ${req.query.id} not found`});
 });
 
 // retrieve the expenses from page*limit to page*limit +1
@@ -39,10 +47,13 @@ router.get('/multiple/:month', function (req, res) {
 });
 
 // delete the expense by id and all associated comments
-router.delete('/:id', function (req, res) {
+router.delete('/', async function (req, res) {
     console.log('DELETE path /api/expense/:id');
-
-    res.status(200).send(' DELETE in path /api/expense/:id in expenses controller');
+    const result = await delete_expense(req.query.id);
+    if(result.deletedCount){
+        res.status(200).send({success: `expense with id: ${req.query.id} has been deleted!`});
+    }
+    res.status(404).send({error: `expense with id: ${req.query.id} not found!`});
 });
 
 //export the router
