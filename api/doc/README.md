@@ -3,7 +3,7 @@
 ## Signup / Signin
 
 - description: Sign up a new user
-- request: `POST /signup/`
+- request: `POST api/user/signup/`
   - content-type: `application/json`
   - body: object
     - username: (string) unique username
@@ -17,11 +17,11 @@
 $ curl -X POST
        -H "Content-Type: `application/json`"
        -d '{"username":"me","password":"pass"}
-       http://localhost:3000/signup/'
+       http://localhost:3000/api/user/signup/'
 ```
 
 - description: Sign in as existing user
-- request: `POST /signin/`
+- request: `POST /api/user/signin/`
   - content-type: `application/json`
   - body: object
     - username: (string) unique username
@@ -35,23 +35,23 @@ $ curl -X POST
        -H "Content-Type: `application/json`"
        -d '{"username":"me","password":"pass"}
        -c cookie.txt
-       http://localhost:3000/signin/'
+       http://localhost:3000/api/user/signin/'
 ```
 
 - description: Sign out of session (destory session)
-- request: `POST /signout/`
+- request: `POST /api/user/signout/`
 - response: 200
 
 ```
 $ curl -X POST
        -c cookie.txt
-       http://localhost:3000/signout/'
+       http://localhost:3000/api/user/signout/'
 ```
 
 ---
 
 - description: Enter/update salary information
-- request: `PATCH /userProfile/salary`
+- request: `PATCH /api/user/profile/salary`
   - content-type: `application/json`
   - body: object
     - salary: (float) income per month
@@ -60,7 +60,7 @@ $ curl -X POST
 ---
 
 - description: Change primary email address
-- request: `PATCH /userProfile/email`
+- request: `PATCH /api/user/profile/email`
   - content-type: `application/json`
   - body: object
     - email: (string) unique email to replace one from set up
@@ -69,7 +69,7 @@ $ curl -X POST
 ---
 
 - description: Change user password
-- request: `PATCH /userProfile/password`
+- request: `PATCH /api/user/profile/password`
   - content-type: `application/json`
   - body: object
     - password: (string) new Password must be different from old
