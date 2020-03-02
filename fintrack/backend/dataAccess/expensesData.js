@@ -22,3 +22,14 @@ exports.delete_expense = async (id) => {
         {_id: _id}));
 };
 
+exports.get_expenses = async (page_number, page_limit) => {
+    const skips = (page_number - 1)*page_limit;
+    return await executeQuery(db, async (db) => await db.collection(expenses_collection).find(
+        {}).sort({date: -1}).skip(skips).limit(page_limit).toArray());
+};
+
+exports.get_expenses_by_month = async (month, page_number, page_limit) => {
+    const skips = (page_number - 1)*page_limit;
+    return await executeQuery(db, async (db) => await db.collection(expenses_collection).find(
+        { "$expr": { "$eq": [{ "$month": new Date() }, month] } }).sort({date: -1}).skip(skips).limit(page_limit).toArray());
+};

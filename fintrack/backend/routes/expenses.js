@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
-const {add_expense, get_expense_by_id, delete_expense} = require("../dataAccess/expensesData");
+const {add_expense, get_expense_by_id, delete_expense, get_expenses, get_expenses_by_month} = require("../dataAccess/expensesData");
 
 //create a new expense
 router.post('/', async function (req, res) {
@@ -23,9 +23,9 @@ router.post('/', async function (req, res) {
     return res.status(500).json({error: "Internal server error"});
 });
 //retrieve the expense by id
-router.get('/', async function (req, res) {
+router.get('/:id', async function (req, res) {
     console.log('GET path /api/expense/:id');
-    const expense = await get_expense_by_id(req.query.id);
+    const expense = await get_expense_by_id(req.params.id);
     if(expense){
         return res.status(200).json(expense);
     }
@@ -33,17 +33,22 @@ router.get('/', async function (req, res) {
 });
 
 // retrieve the expenses from page*limit to page*limit +1
-router.get('/multiple', function (req, res) {
+router.get('/multiple', async function (req, res) {
     console.log('GET path /api/expense/multiple');
-
-    res.status(200).send(' GET in path /api/expense/multiple in expenses controller');
+    const page_number = parseInt(req.query.page_number);
+    const page_limit = parseInt(req.query.page_limit);
+    const result = await get_expenses(page_number, page_limit);
+    res.status(200).json(result);
 });
 
 //retrieve the expenses from page*limit to page*limit +1 in specific month
-router.get('/multiple/:month', function (req, res) {
+router.get('/multiple/:month', async function (req, res) {
     console.log('GET path /api/expense/multiple/:month');
-
-    res.status(200).send(' GET in path /api/expense/multiple/:month in expenses controller');
+    const month = parseInt(req.params.month);
+    const page_number = parseInt(req.query.page_number);
+    const page_limit = parseInt(req.query.page_limit);
+    const result = await get_expenses_by_month(month, page_number, page_limit);
+    res.status(200).json(result);
 });
 
 // delete the expense by id and all associated comments
