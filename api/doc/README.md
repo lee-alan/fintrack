@@ -88,14 +88,15 @@ All the below api require a session from the above login api
   - content-type: `application/json`
   - session
   - body: object
+    - username: (string) the username of the user
     - type: (string) the type of expense
     - amount: (float) the amount of the expense
-    - date: (date) date
     - payment_type: (cash|credit|debit)
     - description: (string) description
 - response: 200
   - content-type: `application/json`
   - body: object
+    - username: (string) the username of the user
     - \_id: (string) the expenses id
     - type: (string) the type of expense
     - amount: (float) the amount of the expense
@@ -112,6 +113,7 @@ All the below api require a session from the above login api
 - response: 200
   - content-type: `application/json`
   - body: object
+    - username: (string) the username of the user
     - \_id: (string) the expenses id
     - type: (string) the type of expense
     - amount: (float) the amount of the expense
@@ -125,35 +127,43 @@ All the below api require a session from the above login api
 
 - description: retrieve the expenses from page\*limit to page\*limit +1
 - request: `GET /api/expenses/`
+  - request parameters: 
   - content-type: `application/json
-  - body: object
-    - page: (int) the type of expense
-    - limit: (int) the amount of the expense
+  - query parameters:
+    - page_number: (int) page number (starts with 1)
+    - page limit: (int) page limit
     - type: (string)[optional] Get expenses that are of this type (if this is null ignore)
     - payment_type: (string)[optional] Get expenses that of of this type (if null ignore)
 - response: 200
   - content-type: `application/json`
   - body: list
+     - username: (string) the username of the user
     - \_id: (string) the expenses id
     - type: (string) the type of expense
     - amount: (float) the amount of the expense
     - date: (date) date
     - payment_type: (cash|credit|debit)
     - description: (string) description
+    
+    ```
+    $ curl -b cookie.txt -X GET
+           http://localhost:3003/api/expense/multiple?page_number=1&page_limit=2
+    ```
 
 ---
 
 - description: retrieve the expenses from page\*limit to page\*limit +1 in the month, month
 - request: `GET /api/expenses/:month`
   - content-type: `application/json
-  - body: object
-    - page: (int) the type of expense
-    - limit: (int) the amount of the expense
+  - query parameters:
+    - page_number: (int) page number (starts with 1)
+    - page_limit: (int) page limit
     - type: (string)[optional] Get expenses that are of this type (if this is null ignore)
     - payment_type: (string)[optional] Get expenses that of of this type (if null ignore)
 - response: 200
   - content-type: `application/json`
   - body: list
+    - username: (string) the username of the user
     - \_id: (string) the expenses id
     - type: (string) the type of expense
     - amount: (float) the amount of the expense
@@ -161,6 +171,10 @@ All the below api require a session from the above login api
     - payment_type: (cash|credit|debit)
     - description: (string) description
 
+```
+$ curl -b cookie.txt -X GET
+       http://localhost:3003/api/expense/multiple/3?page_number=1&page_limit=2
+```
 ---
 
 ### Delete
@@ -170,16 +184,12 @@ All the below api require a session from the above login api
 - response: 200
   - content-type: `application/json`
   - body: object
-    - \_id: (string) the expenses id
-    - type: (string) the type of expense
-    - amount: (float) the amount of the expense
-    - date: (date) date
-    - payment_type: (cash|credit|debit)
-    - description: (string) description
+     - success: (string) => expense with id: <_id> has been deleted!
 - response: 404
-  - body: expenses :id does not exists
+  - body: object
+     - error: (string) => expense with id: <_id> not found!
 
 ```
 $ curl -b cookie.txt -X DELETE
-       http://localhost:3000/api/messages/jed5672jd90xg4awo789/
+       http://localhost:3003/api/expenses/jed5672jd90xg4awo789/
 ```
