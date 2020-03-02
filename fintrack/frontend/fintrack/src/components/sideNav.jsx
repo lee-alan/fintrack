@@ -8,7 +8,7 @@ class SideNavigation extends Component {
     return (
       <div className="side_nav">
         <Link className="menu_item" to="/">
-          Home
+          Dashboard
         </Link>
         <Link className="menu_item" to="/expenses">
           Expenses

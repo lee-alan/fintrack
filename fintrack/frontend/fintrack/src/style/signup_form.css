@@ -1,0 +1,69 @@
+.signup_body {
+  margin-right: 150px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+}
+
+.create_act_header {
+  font-size: 30px;
+  color: rgb(87, 85, 85);
+}
+
+.signup_form > input {
+  max-width: min(60%, 250px);
+  justify-self: center;
+  height: 30px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  margin: 3px;
+  background-color: #fcfcfb;
+}
+
+.signup_form > input:active {
+  border: 1px solid blue;
+  border-radius: 4px;
+  margin: 3px;
+  background-color: #fcfcfb;
+}
+.signup_form > input:focus {
+  border: 1px solid blue;
+  border-radius: 4px;
+  margin: 3px;
+  background-color: #fcfcfb;
+}
+
+.create_acc_button {
+  margin-top: 5px;
+  height: 35px;
+  font-size: 25px;
+
+  background-color: rgb(78, 78, 230);
+  color: ivory;
+  cursor: pointer;
+}
+
+.create_acc_button:hover {
+  background-color: blue;
+}
+
+.signup_form {
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  border-color: black;
+  border: black;
+  border-style: solid;
+  border-radius: 10px;
+  padding: 20px 0px;
+  width: min(70%, 300px);
+}
+
+.signup_form > input {
+  max-width: min(60%, 250px);
+  justify-self: center;
+}

@@ -1,0 +1,18 @@
+.dash_section {
+  display: flex;
+  height: 300px;
+}
+
+.dash_section .dash_item {
+  border: 1px solid black;
+  box-shadow: 10px 5px 5px grey;
+  border-radius: 20px;
+  width: min(40%, 600px);
+  margin: 10px;
+  cursor: pointer;
+}
+
+.dash_section .dash_item:hover {
+  border: 3px solid rgb(58, 57, 57);
+  box-shadow: none;
+}

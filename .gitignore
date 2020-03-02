@@ -7,3 +7,9 @@ node_modules
 
 *-lock.json
 
+# test server
+fintrack/frontend/app.js
+fintrack/frontend/db
+fintrack/frontend/uploads
+fintrack/frontend/package.json
+
