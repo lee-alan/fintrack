@@ -74,12 +74,12 @@ router.post('/signout', function (req, res) {
         path : '/',
         maxAge: 60 * 60 * 24 * 7 // 1 week in number of seconds
     }));
-    res.status(200).json({success: "Signed out"});
+    res.redirect('/api/user');
 });
 //update Salary of a user
 router.patch('/profile/salary', async function (req, res) {
     console.log('path /api/user/profile/salary');
-    const salary = parseInt(req.body.salary);
+    const salary = parseFloat(req.body.salary);
     const result = await update_salary(req.body.username, salary);
     if(result && result.modifiedCount){
         return res.status(200).json({"success": `Updated the salary of the user ${req.body.username}`});
