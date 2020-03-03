@@ -7,9 +7,12 @@ import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
+import "../style/mainNav.css";
+import "../style/main.css";
 
 const drawerWidth = 240;
 
+// Style from https://github.com/mui-org/material-ui/tree/master/docs/src/pages/getting-started/templates/dashboard/Dashboard.js
 const styles = theme => ({
   root: {
     display: "flex"
@@ -101,14 +104,12 @@ class NavigationBar extends Component {
       redirectTo: ""
     };
 
-    this.signIn = this.signIn.bind(this);
     this.signOut = this.signOut.bind(this);
-    this.handleChange = this.handleChange.bind(this);
   }
 
   signOut() {
     axios
-      .get("/signout")
+      .post("/api/user/signout")
       .then(response => {
         if (response.status === 200) {
           document.location.href = "/";
@@ -119,78 +120,65 @@ class NavigationBar extends Component {
       });
   }
 
-  signIn(event) {
-    axios
-      .post("/signin", {
-        username: this.state.username,
-        password: this.state.password
-      })
-      .then(response => {
-        if (response.status === 200) {
-          document.location.href = "/dashboard";
-        }
-      })
-      .catch(error => {
-        console.log("error", error);
-      });
-    event.preventDefault();
-  }
-
-  handleChange(event) {
-    this.setState({
-      [event.target.name]: event.target.value
-    });
-  }
-
   render() {
     //let logo = <div className="signin_button"></div>;
     //let status = this.props.isauth ? "Logged in" : "Not logged in";
-    let element = null;
-    let home_url = "/";
-    /*
-    if (this.props.isauth) {
-      element = (
-        <div className="user_access">
-          <div className="signout_button" onClick={this.signOut}>
-            Sign out
-          </div>
-        </div>
+    let login_el = "";
+    let signup_el = "";
+    let signout_el = "";
+    const SignUpButton = withStyles({
+      root: {
+        fontSize: 16,
+        padding: "6px 12px",
+        lineHeight: 1.5,
+        backgroundColor: "#007bff",
+        borderColor: "#007bff",
+        marginLeft: "5px",
+        "&:hover": {
+          backgroundColor: "#0069d9",
+          borderColor: "#0062cc",
+          boxShadow: "none"
+        },
+        "&:active": {
+          boxShadow: "none",
+          backgroundColor: "#0062cc",
+          borderColor: "#005cbf"
+        },
+        "&:focus": {
+          boxShadow: "0 0 0 0.2rem rgba(0,123,255,.5)"
+        }
+      }
+    })(Button);
+
+    if (!this.props.isauth) {
+      login_el = (
+        <Link className="no_text_decor" to="/login">
+          <Button color="inherit">Login</Button>
+        </Link>
       );
-      home_url = "/dashboard";
-    } else {
-      element = (
-        <div className="login_signup">
-          <form className="login_form">
-            <input
-              type="text"
-              name="username"
-              placeholder="Enter username"
-              value={this.state.username}
-              onChange={this.handleChange}
-              required
-            />
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter password"
-              value={this.state.password}
-              onChange={this.handleChange}
-              required
-            />
-            <div className="login_button" onClick={this.signIn}>
-              Login
-            </div>
-          </form>
-          <Link className="signup_button" to="/signup">
+      signup_el = (
+        <Link to="/signup" className="no_text_decor">
+          <SignUpButton variant="contained" color="primary">
             Sign up
-          </Link>
-        </div>
+          </SignUpButton>
+        </Link>
       );
-    }*/
+    } else {
+      signout_el = (
+        <SignUpButton
+          className="no_text_decor"
+          onClick={this.signOut}
+          variant="contained"
+          color="primary"
+        >
+          Sign out
+        </SignUpButton>
+      );
+    }
     const { classes } = this.props;
 
     return (
-      <AppBar position="absolute" className={clsx(classes.appBar)}>
+      <AppBar position="fixed" className={clsx(classes.appBar)}>
         <Toolbar className={classes.toolbar}>
           <Typography
             component="h1"
@@ -199,9 +187,13 @@ class NavigationBar extends Component {
             noWrap
             className={classes.title}
           >
-            Dashboard
+            <Link to="/" className="no_text_decor link">
+              FinTrack
+            </Link>
           </Typography>
-          <Button color="inherit">Login</Button>
+          {login_el}
+          {signup_el}
+          {signout_el}
         </Toolbar>
       </AppBar>
     );

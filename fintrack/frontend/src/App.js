@@ -14,7 +14,8 @@ import SideNavigation from "./components/sideNav";
 
 import axios from "axios";
 import SignupPage from "./pages/signup";
-//import DashBoard from "./pages/dashboard";
+import LoginPage from "./pages/login";
+import DashBoard from "./pages/dashboard";
 
 class App extends Component {
   state = {};
@@ -26,9 +27,9 @@ class App extends Component {
 
   checkAuth() {
     axios
-      .get("/isauthenticated")
+      .get("/api/user/isauthenticated")
       .then(response => {
-        console.log(response);
+        //console.log(response);
         if (
           this.state.isauth !== response.data.isauth ||
           this.state.user !== response.data.username
@@ -45,7 +46,7 @@ class App extends Component {
   }
 
   componentDidMount() {
-    //this.checkAuth();
+    this.checkAuth();
   }
   /**
    * <div class='flex'>
@@ -55,8 +56,11 @@ class App extends Component {
    */
   render() {
     //if (!this.state.isauth) return <h1>ERROR</h1>;
-    /*
+
     let sideNav = this.state.isauth ? <SideNavigation /> : "";
+    let just_left = this.state.isauth
+      ? "App_top_just App_left_just"
+      : "App_top_just";
     // Determine swtich rules if authenticated or not
     let switchRule = (
       <Switch>
@@ -65,6 +69,9 @@ class App extends Component {
         </Route>
         <Route exact path="/signup">
           <SignupPage />
+        </Route>
+        <Route exact path="/login">
+          <LoginPage />
         </Route>
         <Route exact path="/error">
           <ErrorPage />
@@ -96,22 +103,14 @@ class App extends Component {
           <Redirect to="/dashboard" />
         </Switch>
       );
-    }*/
+    }
     return (
-      <div>
-        <NavigationBar isauth={true} user="Ram" />
-      </div>
-    );
-
-    /**
-     *     return (
       <div>
         <NavigationBar isauth={this.state.isauth} user={this.state.user} />
         {sideNav}
-        <div className="App">{switchRule}</div>
+        <div className={just_left}>{switchRule}</div>
       </div>
     );
-     */
   }
 }
 
