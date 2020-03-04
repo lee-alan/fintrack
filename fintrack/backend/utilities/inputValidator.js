@@ -28,6 +28,12 @@ exports.applyValidationRules = (endpoint) => {
                 check('email').isEmail().withMessage("Invalid Email"),
             ]
         }
+        case "/profile/password": {
+            return [
+                check('username').isLength({min: 5}).withMessage("Invalid username"),
+                check('password').isLength({min: 5}).withMessage("Your password should be at least five characters long"),
+            ]
+        }
     }
 };
 
@@ -36,11 +42,10 @@ exports.validate = (req, res, next) => {
     if (errors.isEmpty()) {
         return next()
     }
-    const extractedErrors = [];
-
-    errors.array().map(err => extractedErrors.push({ [err.param]: err.msg }));
+    let error = "";
+    errors.array().forEach(err => error = error + ". " + err.msg );
 
     return res.status(422).json({
-        errors: extractedErrors,
+        error: error,
     })
 };

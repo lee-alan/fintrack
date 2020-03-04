@@ -1,6 +1,7 @@
 # OS Files
 Thumbs.db
 .DS_Store
+.idea
 
 # node.js
 node_modules
