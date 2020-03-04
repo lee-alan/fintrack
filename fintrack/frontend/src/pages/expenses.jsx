@@ -7,7 +7,7 @@ export default function ExpensePage(props) {
   return (
     <main>
       <MainTitle>Expenses</MainTitle>
-      <ExpensesTable />
+      <ExpensesTable user={props.user} />
     </main>
   );
 }

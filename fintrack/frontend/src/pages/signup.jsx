@@ -59,6 +59,7 @@ class SignupPage extends Component {
   }
 
   signup(event) {
+    console.log("signup");
     axios
       .post("/api/user/signup", {
         email: this.state.email,
@@ -66,11 +67,14 @@ class SignupPage extends Component {
         password: this.state.password
       })
       .then(response => {
+        console.log("response.");
         if (response.status === 200) {
           document.location.href = "/";
         }
       })
       .catch(error => {
+        console.log("error");
+        console.log(error);
         this.setState({
           error: error.response.data.error
         });
