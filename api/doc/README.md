@@ -89,20 +89,20 @@ All the below api require a session from the above login api
   - session
   - body: object
     - username: (string) the username of the user
-    - type: (string) the type of expense
+    - category: (string) the category of expense
     - amount: (float) the amount of the expense
     - payment_type: (cash|credit|debit)
-    - income: (income|expense)
+    - type: (income|expense)
     - description: (string) description
 - response: 200
   - content-type: `application/json`
   - body: object
     - username: (string) the username of the user
     - \_id: (string) the expenses id
-    - type: (string) the type of expense
+    - category: (string) the category of expense
     - amount: (float) the amount of the expense
     - date: (date) date
-    - income: (income|expense)
+    - type: (income|expense)
     - payment_type: (cash|credit|debit)
     - description: (string) description
 
@@ -117,11 +117,11 @@ All the below api require a session from the above login api
   - body: object
     - username: (string) the username of the user
     - \_id: (string) the expenses id
-    - type: (string) the type of expense
+    - category: (string) the category of expense
     - amount: (float) the amount of the expense
     - date: (date) date
     - payment_type: (cash|credit|debit)
-    - income: (income|expense)
+    - type: (income|expense)
     - description: (string) description
 - response: 404
   - body: expenses id does not exists
@@ -135,7 +135,7 @@ All the below api require a session from the above login api
   - query parameters:
     - page_number: (int) page number (starts with 1)
     - page limit: (int) page limit
-    - type: (string)[optional] Get expenses that are of this type (if this is null ignore)
+    - category: (string)[optional] Get expenses that are of this category (if this is null ignore)
     - payment_type: (string)[optional] Get expenses that of of this type (if null ignore)
 - response: 200
   - content-type: `application/json`
@@ -143,7 +143,7 @@ All the below api require a session from the above login api
 
     - username: (string) the username of the user
     - \_id: (string) the expenses id
-    - type: (string) the type of expense
+    - category: (string) the category of expense
     - amount: (float) the amount of the expense
     - date: (date) date
     - payment_type: (cash|credit|debit)
@@ -162,14 +162,14 @@ All the below api require a session from the above login api
   - query parameters:
     - page_number: (int) page number (starts with 1)
     - page_limit: (int) page limit
-    - type: (string)[optional] Get expenses that are of this type (if this is null ignore)
+    - category: (string)[optional] Get expenses that are of this category (if this is null ignore)
     - payment_type: (string)[optional] Get expenses that of of this type (if null ignore)
 - response: 200
   - content-type: `application/json`
   - body: list
     - username: (string) the username of the user
     - \_id: (string) the expenses id
-    - type: (string) the type of expense
+    - category: (string) the category of expense
     - amount: (float) the amount of the expense
     - date: (date) date
     - payment_type: (cash|credit|debit)
