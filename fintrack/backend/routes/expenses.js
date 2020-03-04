@@ -44,7 +44,7 @@ router.get('/multiple', async function (req, res) {
 //retrieve the expenses from page*limit to page*limit +1 in specific month
 router.get('/multiple/:month', async function (req, res) {
     console.log('GET path /api/expense/multiple/:month');
-    const month = parseInt(req.params.month);
+    const month = parseInt(req.query.month);
     const page_number = parseInt(req.query.page_number);
     const page_limit = parseInt(req.query.page_limit);
     const result = await get_expenses_by_month(month, page_number, page_limit);
@@ -52,9 +52,9 @@ router.get('/multiple/:month', async function (req, res) {
 });
 
 // delete the expense by id and all associated comments
-router.delete('/', async function (req, res) {
+router.delete('/:id', async function (req, res) {
     console.log('DELETE path /api/expense/:id');
-    const result = await delete_expense(req.query.id);
+    const result = await delete_expense(req.params.id);
     if(result.deletedCount){
         res.status(200).send({success: `expense with id: ${req.query.id} has been deleted!`});
     }

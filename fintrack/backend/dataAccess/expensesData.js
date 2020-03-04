@@ -1,4 +1,4 @@
-const executeQuery = require('../dataAccess/mongoConnect').executeQuery;
+const executeQuery = require('../utilities/mongoConnect').executeQuery;
 const db = "fintrack";
 const expenses_collection = "expenses";
 ObjectId = require('mongodb').ObjectID;

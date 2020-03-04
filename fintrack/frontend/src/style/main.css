@@ -3,3 +3,11 @@
   font-weight: bold;
   margin: 10px;
 }
+
+.no_text_decor {
+  all: unset;
+}
+
+.link {
+  cursor: pointer;
+}

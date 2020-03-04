@@ -1,6 +1,9 @@
-.App {
+.App_top_just {
+  padding-top: 100px;
+}
+
+.App_left_just {
   padding-left: 200px;
-  padding-top: 60px;
 }
 
 .App-logo {
