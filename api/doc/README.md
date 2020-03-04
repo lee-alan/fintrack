@@ -89,7 +89,11 @@ All the below api require a session from the above login api
   - session
   - body: object
     - username: (string) the username of the user
+<<<<<<< Updated upstream
     - category: (string) the category of expense
+=======
+    - type: (string) the type of expense
+>>>>>>> Stashed changes
     - amount: (float) the amount of the expense
     - payment_type: (cash|credit|debit)
     - type: (income|expense)
@@ -130,24 +134,41 @@ All the below api require a session from the above login api
 
 - description: retrieve the expenses from page\*limit to page\*limit +1
 - request: `GET /api/expenses/`
+<<<<<<< Updated upstream
   - request parameters:
+=======
+  - request parameters: 
+>>>>>>> Stashed changes
   - content-type: `application/json
   - query parameters:
     - page_number: (int) page number (starts with 1)
     - page limit: (int) page limit
+<<<<<<< Updated upstream
     - category: (string)[optional] Get expenses that are of this category (if this is null ignore)
+=======
+    - type: (string)[optional] Get expenses that are of this type (if this is null ignore)
+>>>>>>> Stashed changes
     - payment_type: (string)[optional] Get expenses that of of this type (if null ignore)
 - response: 200
   - content-type: `application/json`
   - body: list
+<<<<<<< Updated upstream
 
     - username: (string) the username of the user
+=======
+     - username: (string) the username of the user
+>>>>>>> Stashed changes
     - \_id: (string) the expenses id
     - category: (string) the category of expense
     - amount: (float) the amount of the expense
     - date: (date) date
     - payment_type: (cash|credit|debit)
     - description: (string) description
+    
+    ```
+    $ curl -b cookie.txt -X GET
+           http://localhost:3003/api/expense/multiple?page_number=1&page_limit=2
+    ```
 
     ```
     $ curl -b cookie.txt -X GET
@@ -162,7 +183,11 @@ All the below api require a session from the above login api
   - query parameters:
     - page_number: (int) page number (starts with 1)
     - page_limit: (int) page limit
+<<<<<<< Updated upstream
     - category: (string)[optional] Get expenses that are of this category (if this is null ignore)
+=======
+    - type: (string)[optional] Get expenses that are of this type (if this is null ignore)
+>>>>>>> Stashed changes
     - payment_type: (string)[optional] Get expenses that of of this type (if null ignore)
 - response: 200
   - content-type: `application/json`
@@ -179,7 +204,10 @@ All the below api require a session from the above login api
 $ curl -b cookie.txt -X GET
        http://localhost:3003/api/expense/multiple/3?page_number=1&page_limit=2
 ```
+<<<<<<< Updated upstream
 
+=======
+>>>>>>> Stashed changes
 ---
 
 - description: retrieve the expenses from page\*limit to page\*limit +1 in the month, month
@@ -198,10 +226,17 @@ $ curl -b cookie.txt -X GET
 - response: 200
   - content-type: `application/json`
   - body: object
+<<<<<<< Updated upstream
     - success: (string) => expense with id: <\_id> has been deleted!
 - response: 404
   - body: object
     - error: (string) => expense with id: <\_id> not found!
+=======
+     - success: (string) => expense with id: <_id> has been deleted!
+- response: 404
+  - body: object
+     - error: (string) => expense with id: <_id> not found!
+>>>>>>> Stashed changes
 
 ```
 $ curl -b cookie.txt -X DELETE
