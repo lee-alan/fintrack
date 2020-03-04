@@ -7,12 +7,13 @@
     "crypto": "^1.0.1",
     "express": "^4.17.1",
     "express-session": "^1.17.0",
+    "express-validator": "^6.4.0",
     "fs": "0.0.1-security",
     "mongodb": "^3.5.4",
     "nodemon": "^2.0.2",
     "path": "^0.12.7"
   },
-  "description": "BAckend api",
+  "description": "Backend api",
   "main": "app.js",
   "devDependencies": {},
   "scripts": {

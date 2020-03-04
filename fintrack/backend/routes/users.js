@@ -12,6 +12,11 @@ const {
   update_salary
 } = require("../dataAccess/usersData");
 
+const {
+  applyValidationRules,
+  validate
+} = require("../utilities/inputValidator");
+
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
@@ -23,7 +28,7 @@ router.get("/", async function(req, res) {
   res.status(200).send("/api/user/ in users controller");
 });
 //Signup
-router.post("/signup", async function(req, res) {
+router.post("/signup",applyValidationRules("/signup"), validate, async function(req, res) {
   console.log("path /api/user/signup/");
   let username = req.body.username;
   let password = req.body.password;
@@ -56,7 +61,7 @@ router.post("/signup", async function(req, res) {
 });
 
 //Signin
-router.post("/signin", async function(req, res) {
+router.post("/signin", applyValidationRules("/signin"), validate, async function(req, res) {
   console.log("path /api/user/signin/");
   var username = req.body.username;
   var password = req.body.password;
@@ -93,7 +98,6 @@ router.get("/isauthenticated", function(req, res) {
   return res.json({ isauth: false, username: null });
 });
 
-//Signout
 router.post("/signout", function(req, res) {
   console.log("path /api/user/signout/");
   req.session.destroy();
@@ -107,7 +111,7 @@ router.post("/signout", function(req, res) {
   res.status(200).json({ success: "Signed out" });
 });
 //update Salary of a user
-router.patch("/profile/salary", async function(req, res) {
+router.patch("/profile/salary",applyValidationRules("/profile/salary"), validate, async function(req, res) {
   console.log("path /api/user/profile/salary");
   const salary = parseInt(req.body.salary);
   const result = await update_salary(req.body.username, salary);
@@ -121,7 +125,7 @@ router.patch("/profile/salary", async function(req, res) {
   });
 });
 //Update email of a user
-router.patch("/profile/email", async function(req, res) {
+router.patch("/profile/email", applyValidationRules("/profile/email"), validate, async function(req, res) {
   console.log("path /api/user/profile/email");
   const result = await update_email(req.body.username, req.body.email);
   if (result && result.modifiedCount) {
@@ -136,8 +140,7 @@ router.patch("/profile/email", async function(req, res) {
 //Update password of a user
 router.patch("/profile/password", async function(req, res) {
   console.log("path /api/user/profile/password");
-  const password = req.body.password;
-  const result = await update_email(req.body.username, password);
+  const result = await update_email(req.body.username, req.body.email);
   if (result && result.modifiedCount) {
     return res
       .status(200)

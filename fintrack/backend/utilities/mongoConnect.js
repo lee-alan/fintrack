@@ -4,7 +4,7 @@ const path = require('path');
 const config_param = fs.readFileSync(path.resolve(__dirname, "../config.json"), 'utf-8');
 const configJson = JSON.parse(config_param);
 const mongodbUrl = `mongodb+srv://${configJson.mongo.user}:${configJson.mongo.password}@cluster0-jfjzg.gcp.mongodb.net/test?retryWrites=true&w=majority`;
-// const mongodbUrl = `mongodb+srv://${configJson.mongo.user}:${configJson.mongo.password}@cluster0-ehwsx.mongodb.net/test?retryWrites=true&w=majority`;
+
 const connectMongo = () => new Promise(async (resolve, reject) => {
     if (configJson) {
         try {
