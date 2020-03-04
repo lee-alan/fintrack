@@ -14,24 +14,17 @@ import Paper from "@material-ui/core/Paper";
 /// Got start code/template from:
 // https://material-ui.com/components/tables/
 
-function createData(id, date, des, paymentType, amount) {
-  return { id, date, des, paymentType, amount };
+function createData(id, date, des, cate, paymentType, amount) {
+  return { id, date, des, cate, paymentType, amount };
 }
 
 const rows = [
-  createData(1, "Cupcake", 305, 3.7, 67),
-  createData(2, "Donut", 452, 25.0, 51),
-  createData(3, "Eclair", 262, 16.0, 24),
-  createData(4, "Frozen yoghurt", 159, 6.0, 24),
-  createData(5, "Gingerbread", 356, 16.0, 49),
-  createData(6, "Honeycomb", 408, 3.2, 87),
-  createData(7, "Ice cream sandwich", 237, 9.0, 37),
-  createData(8, "Jelly Bean", 375, 0.0, 94),
-  createData(9, "KitKat", 518, 26.0, 65),
-  createData(10, "Lollipop", 392, 0.2, 98),
-  createData(11, "Marshmallow", 318, 0, 81),
-  createData(12, "Nougat", 360, 19.0, 9),
-  createData(13, "Oreo", 437, 18.0, 63)
+  createData(1, "March 4", "Walmart", "Home", "credit", 67),
+  createData(2, "March 4", "Pizza Pizza", "Food", "credit", 12),
+  createData(3, "March 3", "Gift to Alan", "Gift", "credit", 35.70),
+  createData(4, "March 2", "Rent", "Home", "debit", 930),
+  createData(5, "March 2", "New computer", "Entertainment", "credit", 1199.99),
+  createData(6, "March 1", "TTC", "Travel", "credit", 105.10)
 ];
 
 function descendingComparator(a, b, orderBy) {
@@ -72,6 +65,12 @@ const headCells = [
     numeric: false,
     disablePadding: false,
     label: "Description"
+  },
+  {
+    id: "category",
+    numeric: false,
+    disablePadding: false,
+    label: "Category"
   },
   {
     id: "payment",
@@ -153,7 +152,6 @@ export default function ExpensesTable() {
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
-  const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -163,33 +161,8 @@ export default function ExpensesTable() {
     setOrderBy(property);
   };
 
-  const handleSelectAllClick = event => {
-    if (event.target.checked) {
-      const newSelecteds = rows.map(n => n.name);
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  };
-
-  const handleClick = (event, name) => {
-    const selectedIndex = selected.indexOf(name);
-    let newSelected = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, name);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-
-    setSelected(newSelected);
+  const handleClick = (event, id) => {
+    console.log("Clicked:", id);
   };
 
   const handleChangePage = (event, newPage) => {
@@ -200,8 +173,6 @@ export default function ExpensesTable() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  const isSelected = name => selected.indexOf(name) !== -1;
 
   const emptyRows =
     rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
@@ -216,20 +187,24 @@ export default function ExpensesTable() {
             size={"medium"}
             aria-label="enhanced table"
           >
+            <colgroup>
+            <col style={{width:'20%'}} />
+            <col style={{width:'40%'}} />
+            <col style={{width:'10%'}} />
+            <col style={{width:'10%'}} />
+            <col style={{width:'10%'}} />
+            <col style={{width:'10%'}} />
+            </colgroup>
             <EnhancedTableHead
               classes={classes}
-              numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
             />
             <TableBody>
               {stableSort(rows, getComparator(order, orderBy))
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
-                  const isItemSelected = isSelected(row.date);
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
@@ -238,12 +213,12 @@ export default function ExpensesTable() {
                       onClick={event => handleClick(event, row.id)}
                       tabIndex={-1}
                       key={row.id}
-                      selected={isItemSelected}
                     >
                       <TableCell component="th" id={labelId} scope="row">
                         {row.date}
                       </TableCell>
                       <TableCell align="left">{row.des}</TableCell>
+                      <TableCell align="right">{row.cate}</TableCell>
                       <TableCell align="right">{row.paymentType}</TableCell>
                       <TableCell align="right">{row.amount}</TableCell>
                       <TableCell align="right">Actions</TableCell>
