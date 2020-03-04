@@ -59,7 +59,10 @@ class SignupPage extends Component {
   }
 
   signup(event) {
+<<<<<<< Updated upstream
     console.log("signup");
+=======
+>>>>>>> Stashed changes
     axios
       .post("/api/user/signup", {
         email: this.state.email,
@@ -67,14 +70,20 @@ class SignupPage extends Component {
         password: this.state.password
       })
       .then(response => {
+<<<<<<< Updated upstream
         console.log("response.");
+=======
+>>>>>>> Stashed changes
         if (response.status === 200) {
           document.location.href = "/";
         }
       })
       .catch(error => {
+<<<<<<< Updated upstream
         console.log("error");
         console.log(error);
+=======
+>>>>>>> Stashed changes
         this.setState({
           error: error.response.data.error
         });

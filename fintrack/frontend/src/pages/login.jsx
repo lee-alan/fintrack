@@ -70,8 +70,11 @@ class LoginPage extends Component {
         }
       })
       .catch(error => {
+<<<<<<< Updated upstream
         console.log("error");
         console.log(error);
+=======
+>>>>>>> Stashed changes
         this.setState({
           error: error.response.data.error
         });
