@@ -134,13 +134,18 @@ All the below api require a session from the above login api
 
 - description: retrieve the expenses from page\*limit to page\*limit +1
 - request: `GET /api/expenses/`
+<<<<<<< Updated upstream
+  - request parameters:
+=======
   - request parameters: 
 >>>>>>> Stashed changes
   - content-type: `application/json
   - query parameters:
     - page_number: (int) page number (starts with 1)
     - page limit: (int) page limit
+<<<<<<< Updated upstream
     - category: (string)[optional] Get expenses that are of this category (if this is null ignore)
+=======
     - type: (string)[optional] Get expenses that are of this type (if this is null ignore)
 >>>>>>> Stashed changes
     - payment_type: (string)[optional] Get expenses that of of this type (if null ignore)

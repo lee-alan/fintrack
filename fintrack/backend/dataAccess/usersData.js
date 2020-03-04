@@ -27,6 +27,11 @@ exports.update_email = async (username, email) => {
         {username: username}, {$set: {email: email}}));
 };
 
+exports.update_password = async (username, password, salt) => {
+    return await executeQuery(db, async (db) => await db.collection(users_collection).updateOne(
+        {username: username}, {$set: {password: password, salt: salt}}));
+};
+
 exports.update_salary = async (username, salary) => {
     return await executeQuery(db, async (db) => await db.collection(users_collection).updateOne(
         {username: username}, {$set: {salary: salary}}));
