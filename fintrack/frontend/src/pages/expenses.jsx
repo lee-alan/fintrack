@@ -1,10 +1,13 @@
-import React, { Component } from "react";
+import React from "react";
 
-class ExpensesPage extends Component {
-  state = {};
-  render() {
-    return <h1>ExpensesPage</h1>;
-  }
+import MainTitle from "../components/pageTitle";
+import ExpensesTable from "../components/expenses/expensesTable";
+
+export default function ExpensePage(props) {
+  return (
+    <main>
+      <MainTitle>Expenses</MainTitle>
+      <ExpensesTable />
+    </main>
+  );
 }
-
-export default ExpensesPage;

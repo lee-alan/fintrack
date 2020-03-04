@@ -92,6 +92,7 @@ All the below api require a session from the above login api
     - type: (string) the type of expense
     - amount: (float) the amount of the expense
     - payment_type: (cash|credit|debit)
+    - income: (income|expense)
     - description: (string) description
 - response: 200
   - content-type: `application/json`
@@ -101,6 +102,7 @@ All the below api require a session from the above login api
     - type: (string) the type of expense
     - amount: (float) the amount of the expense
     - date: (date) date
+    - income: (income|expense)
     - payment_type: (cash|credit|debit)
     - description: (string) description
 
@@ -119,6 +121,7 @@ All the below api require a session from the above login api
     - amount: (float) the amount of the expense
     - date: (date) date
     - payment_type: (cash|credit|debit)
+    - income: (income|expense)
     - description: (string) description
 - response: 404
   - body: expenses id does not exists
@@ -127,7 +130,7 @@ All the below api require a session from the above login api
 
 - description: retrieve the expenses from page\*limit to page\*limit +1
 - request: `GET /api/expenses/`
-  - request parameters: 
+  - request parameters:
   - content-type: `application/json
   - query parameters:
     - page_number: (int) page number (starts with 1)
@@ -137,14 +140,15 @@ All the below api require a session from the above login api
 - response: 200
   - content-type: `application/json`
   - body: list
-     - username: (string) the username of the user
+
+    - username: (string) the username of the user
     - \_id: (string) the expenses id
     - type: (string) the type of expense
     - amount: (float) the amount of the expense
     - date: (date) date
     - payment_type: (cash|credit|debit)
     - description: (string) description
-    
+
     ```
     $ curl -b cookie.txt -X GET
            http://localhost:3003/api/expense/multiple?page_number=1&page_limit=2
@@ -175,7 +179,17 @@ All the below api require a session from the above login api
 $ curl -b cookie.txt -X GET
        http://localhost:3003/api/expense/multiple/3?page_number=1&page_limit=2
 ```
+
 ---
+
+- description: retrieve the expenses from page\*limit to page\*limit +1 in the month, month
+- request: `GET /api/expenses/:month/overview`
+  - content-type: `application/json
+- response: 200
+  - content-type: `application/json`
+  - body: object
+    - total_expenses: (float) sum of all expenses for month
+    - total_income: (float) sum of all income for month
 
 ### Delete
 
@@ -184,10 +198,10 @@ $ curl -b cookie.txt -X GET
 - response: 200
   - content-type: `application/json`
   - body: object
-     - success: (string) => expense with id: <_id> has been deleted!
+    - success: (string) => expense with id: <\_id> has been deleted!
 - response: 404
   - body: object
-     - error: (string) => expense with id: <_id> not found!
+    - error: (string) => expense with id: <\_id> not found!
 
 ```
 $ curl -b cookie.txt -X DELETE
