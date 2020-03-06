@@ -21,7 +21,6 @@ export default function ExpenseDash() {
   });
 
   useEffect(() => {
-    console.log("EFFECT");
     // TODO: axios to fetch this data and setData
     setData({
       expenses_total: 0

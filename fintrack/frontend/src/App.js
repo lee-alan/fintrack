@@ -7,6 +7,7 @@ import ExpensesPage from "./pages/expenses";
 import InvestmentsPage from "./pages/investments";
 import AboutPage from "./pages/about";
 import ErrorPage from "./pages/error";
+import ProfilePage from "./pages/profile";
 
 import NavigationBar from "./components/mainNav";
 import SideNavigation from "./components/sideNav";
@@ -76,31 +77,34 @@ class App extends Component {
         <Route exact path="/error">
           <ErrorPage />
         </Route>
-        <Redirect to="/" />
       </Switch>
     );
     if (this.state.isauth) {
+      console.log("Is auth");
       switchRule = (
         <Switch>
-          <Route exact path="/dashboard">
+          <Route path="/dashboard">
             <DashBoard isauth={this.state.isauth} user={this.state.user} />
           </Route>
-          <Route exact path="/expenses">
+          <Route path="/profile">
+            <ProfilePage isauth={this.state.isauth} user={this.state.user} />
+          </Route>
+          <Route path="/expenses">
             <ExpensesPage isauth={this.state.isauth} user={this.state.user} />
           </Route>
-          <Route exact path="/investments">
+          <Route path="/investments">
             <InvestmentsPage
               isauth={this.state.isauth}
               user={this.state.user}
             />
           </Route>
-          <Route exact path="/about">
+          <Route path="/about">
             <AboutPage isauth={this.state.isauth} user={this.state.user} />
           </Route>
-          <Route exact path="/error">
+          <Route path="/error">
             <ErrorPage />
           </Route>
-          <Redirect to="/dashboard" />
+          <Redirect from="/" to="/dashboard" />
         </Switch>
       );
     }

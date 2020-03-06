@@ -85,6 +85,8 @@ export default function AddExpenseDialog(props) {
   const [error, setError] = React.useState("");
   const [getData, setGetData] = React.useState(false);
 
+  // This effect will fetch data when the edit form is opened
+  // This is so that data for all the expenses are not fetched at once
   React.useEffect(() => {
     console.log("Get data is", open);
     // If open and getData is false then get the data for this expense
@@ -94,6 +96,7 @@ export default function AddExpenseDialog(props) {
     //}
   }, [open]);
 
+  // Reset form data
   const reset_form = () => {
     setCategory("");
     setPaymentType("");
@@ -184,6 +187,7 @@ export default function AddExpenseDialog(props) {
   event.preventDefault();
 }*/
   };
+
   const formObject =
     props.id && !getData ? (
       <div className={classes.loading}>
