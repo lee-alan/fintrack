@@ -2,6 +2,7 @@ let express = require('express');
 let app = express();
 let users = require('./routes/users.js');
 let expenses = require('./routes/expenses.js');
+const PORT = process.env.PORT || 5000;
 
 const session = require('express-session');
 
@@ -22,4 +23,4 @@ app.use(function (req, res) {
     res.status(404).send("Sorry can't find that in Fintrack api!")
 });
 
-app.listen(3003, () => console.log('Start listening on port 3003!'));
+app.listen(PORT, () => console.log('Start listening on port 3003!'));
