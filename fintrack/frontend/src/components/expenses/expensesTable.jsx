@@ -10,22 +10,11 @@ import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Paper from "@material-ui/core/Paper";
+import ExpenseAction from "./expenseActions";
+import { util } from "../util";
 
 /// Got start code/template from:
 // https://material-ui.com/components/tables/
-
-function createData(id, date, des, cate, paymentType, amount) {
-  return { id, date, des, cate, paymentType, amount };
-}
-
-const rows = [
-  createData(1, "March 4", "Walmart", "Home", "credit", 67),
-  createData(2, "March 4", "Pizza Pizza", "Food", "credit", 12),
-  createData(3, "March 3", "Gift to Alan", "Gift", "credit", 35.70),
-  createData(4, "March 2", "Rent", "Home", "debit", 930),
-  createData(5, "March 2", "New computer", "Entertainment", "credit", 1199.99),
-  createData(6, "March 1", "TTC", "Travel", "credit", 105.10)
-];
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -148,7 +137,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function ExpensesTable() {
+export default function ExpensesTable(props) {
+  const { rows } = props;
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -161,10 +151,6 @@ export default function ExpensesTable() {
     setOrderBy(property);
   };
 
-  const handleClick = (event, id) => {
-    console.log("Clicked:", id);
-  };
-
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -173,9 +159,6 @@ export default function ExpensesTable() {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  const emptyRows =
-    rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
   return (
     <div className={classes.root}>
@@ -188,12 +171,12 @@ export default function ExpensesTable() {
             aria-label="enhanced table"
           >
             <colgroup>
-            <col style={{width:'20%'}} />
-            <col style={{width:'40%'}} />
-            <col style={{width:'10%'}} />
-            <col style={{width:'10%'}} />
-            <col style={{width:'10%'}} />
-            <col style={{width:'10%'}} />
+              <col style={{ width: "20%" }} />
+              <col style={{ width: "40%" }} />
+              <col style={{ width: "10%" }} />
+              <col style={{ width: "10%" }} />
+              <col style={{ width: "10%" }} />
+              <col style={{ width: "10%" }} />
             </colgroup>
             <EnhancedTableHead
               classes={classes}
@@ -208,28 +191,22 @@ export default function ExpensesTable() {
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
-                    <TableRow
-                      hover
-                      onClick={event => handleClick(event, row.id)}
-                      tabIndex={-1}
-                      key={row.id}
-                    >
+                    <TableRow hover tabIndex={-1} key={row.id}>
                       <TableCell component="th" id={labelId} scope="row">
                         {row.date}
                       </TableCell>
-                      <TableCell align="left">{row.des}</TableCell>
-                      <TableCell align="right">{row.cate}</TableCell>
+                      <TableCell align="left">{row.description}</TableCell>
+                      <TableCell align="right">{row.category}</TableCell>
                       <TableCell align="right">{row.paymentType}</TableCell>
-                      <TableCell align="right">{row.amount}</TableCell>
-                      <TableCell align="right">Actions</TableCell>
+                      <TableCell align="right">
+                        {util.formatToDollars(row.amount)}
+                      </TableCell>
+                      <TableCell align="right">
+                        <ExpenseAction user={props.user} id={row.id} />
+                      </TableCell>
                     </TableRow>
                   );
                 })}
-              {emptyRows > 0 && (
-                <TableRow style={{ height: 53 * emptyRows }}>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
             </TableBody>
           </Table>
         </TableContainer>

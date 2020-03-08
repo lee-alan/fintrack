@@ -90,7 +90,7 @@ class LoginPage extends Component {
           <Typography component="h1" variant="h5">
             Login
           </Typography>
-          <form className={classes.form}>
+          <form className={classes.form} onSubmit={this.signup}>
             <Grid container spacing={2}>
               <Grid item xs={12}>
                 <TextField

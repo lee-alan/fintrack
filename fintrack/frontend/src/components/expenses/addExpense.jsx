@@ -20,7 +20,9 @@ import OutlinedInput from "@material-ui/core/OutlinedInput";
 import { validator } from "../validator";
 import FormHelperText from "@material-ui/core/FormHelperText";
 import Box from "@material-ui/core/Box";
-import axios from "axios";
+import CircularProgress from "@material-ui/core/CircularProgress";
+
+//import axios from "axios";
 
 import {
   MuiPickersUtilsProvider,
@@ -43,6 +45,13 @@ const useStyles = makeStyles(theme => ({
   },
   save_cancel: {
     marginTop: "10px"
+  },
+  loading: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
   }
 }));
 
@@ -74,7 +83,20 @@ export default function AddExpenseDialog(props) {
   const [payError, setPayError] = React.useState(false);
   const [desError, setDesError] = React.useState(false);
   const [error, setError] = React.useState("");
+  const [getData, setGetData] = React.useState(false);
 
+  // This effect will fetch data when the edit form is opened
+  // This is so that data for all the expenses are not fetched at once
+  React.useEffect(() => {
+    console.log("Get data is", open);
+    // If open and getData is false then get the data for this expense
+    //if (open && !getData){
+    //await new Promise(r => setTimeout(r, 2000));
+    //setGetData(true);
+    //}
+  }, [open]);
+
+  // Reset form data
   const reset_form = () => {
     setCategory("");
     setPaymentType("");
@@ -85,6 +107,7 @@ export default function AddExpenseDialog(props) {
     setCatError(false);
     setPayError(false);
     setDesError(false);
+    setGetData(false);
   };
 
   const handleDateChange = date => {
@@ -165,16 +188,12 @@ export default function AddExpenseDialog(props) {
 }*/
   };
 
-  return (
-    <NewDialog
-      disableBackdropClick
-      onClose={handleClose}
-      maxWidth="sm"
-      aria-labelledby="simple-dialog-title"
-      fullWidth={true}
-      open={open}
-    >
-      <DialogTitle id="simple-dialog-title">Add an Expense</DialogTitle>
+  const formObject =
+    props.id && !getData ? (
+      <div className={classes.loading}>
+        <CircularProgress />
+      </div>
+    ) : (
       <form className={classes.form}>
         <Container maxWidth="lg">
           <Grid
@@ -325,6 +344,19 @@ export default function AddExpenseDialog(props) {
           </Grid>
         </Container>
       </form>
+    );
+
+  return (
+    <NewDialog
+      disableBackdropClick
+      onClose={handleClose}
+      maxWidth="sm"
+      aria-labelledby="simple-dialog-title"
+      fullWidth={true}
+      open={open}
+    >
+      <DialogTitle id="simple-dialog-title">Add an Expense</DialogTitle>
+      {formObject}
       <Box mt={1}>{error}</Box>
     </NewDialog>
   );

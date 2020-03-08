@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import clsx from "clsx";
+import { blue } from "@material-ui/core/colors";
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -9,6 +10,14 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import "../style/mainNav.css";
 import "../style/main.css";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import PersonOutlineIcon from "@material-ui/icons/PersonOutline";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+import { Avatar } from "@material-ui/core";
 
 const drawerWidth = 240;
 
@@ -89,6 +98,11 @@ const styles = theme => ({
   },
   fixedHeight: {
     height: 240
+  },
+  profileIcon: {
+    color: theme.palette.getContrastText(blue[700]),
+    backgroundColor: blue[700],
+    cursor: "pointer"
   }
 });
 
@@ -97,11 +111,7 @@ class NavigationBar extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      username: "",
-      password: "",
-      error: "",
-      redirect: false,
-      redirectTo: ""
+      anchorEl: null
     };
 
     this.signOut = this.signOut.bind(this);
@@ -119,6 +129,17 @@ class NavigationBar extends Component {
         console.log("error", error);
       });
   }
+  handleClick = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
+  handleProfile() {
+    console.log("profile");
+    window.location.href = "/profile";
+  }
 
   render() {
     //let logo = <div className="signin_button"></div>;
@@ -126,6 +147,9 @@ class NavigationBar extends Component {
     let login_el = "";
     let signup_el = "";
     let signout_el = "";
+    const ITEM_HEIGHT = 48;
+    const { classes } = this.props;
+
     const SignUpButton = withStyles({
       root: {
         fontSize: 16,
@@ -150,6 +174,42 @@ class NavigationBar extends Component {
       }
     })(Button);
 
+    const profile = (
+      <div>
+        <Avatar className={classes.profileIcon} onClick={this.handleClick}>
+          <AccountCircleIcon />
+        </Avatar>
+        <Menu
+          id="long-menu"
+          anchorEl={this.state.anchorEl}
+          keepMounted
+          open={Boolean(this.state.anchorEl)}
+          onClose={this.handleClose}
+          PaperProps={{
+            style: {
+              maxHeight: ITEM_HEIGHT * 4.5,
+              width: 200
+            }
+          }}
+        >
+          <MenuItem key="profile" onClick={this.handleProfile}>
+            <ListItemIcon>
+              <PersonOutlineIcon fontSize="small" />
+            </ListItemIcon>
+            <Link to="/profile" className="no_text_decor link">
+              <ListItemText primary="Profile" />
+            </Link>
+          </MenuItem>
+          <MenuItem key="signout" onClick={this.signOut}>
+            <ListItemIcon>
+              <ExitToAppIcon fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Sign out" />
+          </MenuItem>
+        </Menu>
+      </div>
+    );
+
     if (!this.props.isauth) {
       login_el = (
         <Link className="no_text_decor" to="/login">
@@ -164,18 +224,8 @@ class NavigationBar extends Component {
         </Link>
       );
     } else {
-      signout_el = (
-        <SignUpButton
-          className="no_text_decor"
-          onClick={this.signOut}
-          variant="contained"
-          color="primary"
-        >
-          Sign out
-        </SignUpButton>
-      );
+      signout_el = profile;
     }
-    const { classes } = this.props;
 
     return (
       <AppBar position="fixed" className={clsx(classes.appBar)}>
