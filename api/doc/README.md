@@ -167,13 +167,13 @@ All the below api require a session from the above login api
 ---
 
 - description: retrieve the expenses from page\*limit to page\*limit +1 in the month, month
-- request: `GET /api/expenses/:month`
+- request: `GET /api/expenses/:username/:month`
   - content-type: `application/json
   - query parameters:
     - page_number: (int) page number (starts with 1)
     - page_limit: (int) page limit
-    - category: (string)[optional] Get expenses that are of this category (if this is null ignore)
-    - payment_type: (string)[optional] Get expenses that of of this type (if null ignore)
+    - category: (string)[optional] Get expenses that are of this category (=.* to match everything)
+    - payment_type: (string)[optional] Get expenses that of of this type (=.* to match everything)
 - response: 200
   - content-type: `application/json`
   - body: list
@@ -191,7 +191,7 @@ $ curl -b cookie.txt -X GET
 ```
 
 - description: retrieve the expenses from page\*limit to page\*limit +1 in the month, month
-- request: `GET /api/expenses/:month/overview`
+- request: `GET /api/expenses/:username/:month/overview`
   - content-type: `application/json
 - response: 200
   - content-type: `application/json`
