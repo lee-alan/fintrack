@@ -11,6 +11,9 @@ app.use(session({
     saveUninitialized: true,
 }));
 
+app.use(express.static('../frontend/build'));
+
+
 app.use('/api/user', users);
 app.use('/api/expense', expenses);
 
