@@ -5,9 +5,12 @@ import MainTitle from "../components/pageTitle";
 import { makeStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Tooltip from "@material-ui/core/Tooltip";
+import UpdateProfileForm from "../components/profile/updateProfile";
+import UpdatePasswordForm from "../components/profile/updatePassword";
+import "../style/main.css";
 
 const profile_img = require("../media/profile_image.png");
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   root: {
     flexGrow: 1
   },
@@ -46,17 +49,37 @@ const useStyles = makeStyles(theme => ({
     marginTop: "auto",
     marginBottom: "5px",
     marginLeft: "auto",
-    cursor: "pointer"
+    cursor: "pointer",
+    color: "blue"
   }
 }));
 
 export default function ProfilePage(props) {
   const [email, setEmail] = React.useState("");
   const [salary, setSalary] = React.useState(null);
+  const [openEmailForm, setOpenEmailForm] = React.useState(false);
+  const [openSalaryForm, setOpenSalaryForm] = React.useState(false);
+  const [openPassForm, setOpenPassForm] = React.useState(false);
 
   React.useEffect(() => {
     console.log("Get email and salary from database here");
   }, []);
+
+  const openEmail = () => {
+    setOpenEmailForm(true);
+  };
+  const openSalary = () => {
+    setOpenSalaryForm(true);
+  };
+  const openPasword = () => {
+    setOpenPassForm(true);
+  };
+
+  const handleCloseAllDialogs = () => {
+    setOpenEmailForm(false);
+    setOpenSalaryForm(false);
+    setOpenPassForm(false);
+  };
 
   const classes = useStyles();
   console.log("HERE");
@@ -88,14 +111,16 @@ export default function ProfilePage(props) {
                 <div className={classes.flexHeader}>Username:</div>
               </Tooltip>
               <div className={classes.flexValue}>{props.user}</div>
-              <div className={classes.flexEdit}>Edit</div>
+              <div className={classes.flexEdit}></div>
             </div>
             <div className={classes.flexRow}>
               <Tooltip title="Email address">
                 <div className={classes.flexHeader}>Email:</div>
               </Tooltip>
               <div className={classes.flexValue}>{email}</div>
-              <div className={classes.flexEdit}>Edit</div>
+              <div className={classes.flexEdit} onClick={openEmail}>
+                Edit
+              </div>
             </div>
             <div className={classes.flexRow}>
               <Tooltip title="Monthly">
@@ -106,11 +131,33 @@ export default function ProfilePage(props) {
                   ? "Add you salary for better personalized tracking"
                   : salary}
               </div>
-              <div className={classes.flexEdit}>Edit</div>
+              <div className={classes.flexEdit} onClick={openSalary}>
+                Edit
+              </div>
+            </div>
+            <div
+              className="link"
+              style={{ color: "blue" }}
+              onClick={openPasword}
+            >
+              Change Password
             </div>
           </div>
         </Grid>
       </Grid>
+      <UpdateProfileForm
+        onClose={handleCloseAllDialogs}
+        open={openEmailForm}
+        field="email"
+        prevVal={email}
+      />
+      <UpdateProfileForm
+        onClose={handleCloseAllDialogs}
+        open={openSalaryForm}
+        field="salary"
+        prevVal={salary}
+      />
+      <UpdatePasswordForm onClose={handleCloseAllDialogs} open={openPassForm} />
     </div>
   );
 }
