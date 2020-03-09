@@ -138,7 +138,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function ExpensesTable(props) {
-  const { rows } = props;
+  const { rows, loadMax, dbPage } = props;
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -197,7 +197,7 @@ export default function ExpensesTable(props) {
                       </TableCell>
                       <TableCell align="left">{row.description}</TableCell>
                       <TableCell align="right">{row.category}</TableCell>
-                      <TableCell align="right">{row.paymentType}</TableCell>
+                      <TableCell align="right">{row.payment_type}</TableCell>
                       <TableCell align="right">
                         {util.formatToDollars(row.amount)}
                       </TableCell>
