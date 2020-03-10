@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const router = express.Router();
 router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
-const {add_expense, get_expense_by_id, delete_expense, get_expenses, get_expenses_by_month} = require("../dataAccess/expensesData");
+const {add_expense, get_expense_by_id, delete_expense, get_expenses, get_expenses_by_month, update_expense, get_expenses_sum, get_expenses_sum_month} = require("../dataAccess/expensesData");
 const {
     applyValidationRules,
     validate
@@ -24,6 +24,27 @@ router.post('/',applyValidationRules("create expense"), validate, async function
     const result = await add_expense(expense);
     if(result) {
         return res.status(200).json(result.ops[0]);
+    }
+    return res.status(500).json({error: "Internal server error"});
+});
+
+//Update expense:
+router.patch('/:id',applyValidationRules("update expense"), validate, async function (req, res) {
+    console.log('Patch path /expense/');
+    const id = req.params.id;
+    const fields = {
+        category: req.body.category,
+        type: req.body.type,
+        amount: parseFloat(req.body.amount),
+        date: new Date(req.body.date),
+        payment_type: req.body.payment_type,
+        description: req.body.description
+    };
+    const result = await update_expense(id, fields);
+    if(result && result.modifiedCount) {
+        return res.status(200).json({"message": "An object got updated"});
+    }else if(result){
+        return res.status(200).json({"message": "Nothing to update"});
     }
     return res.status(500).json({error: "Internal server error"});
 });
@@ -48,6 +69,15 @@ router.get('/multiple/:username', applyValidationRules("get expenses"), validate
     res.status(200).json(result);
 });
 
+router.get('/multiple-sum/:username', applyValidationRules("get expenses"), validate,async function (req, res) {
+    console.log('GET path /api/expense/multiple/:username');
+    const username = req.params.username;
+    const page_number = parseInt(req.query.page_number);
+    const page_limit = parseInt(req.query.page_limit);
+    const {category=".*", payment_type=".*"} = req.query;
+    const result = await get_expenses_sum(page_number, page_limit, username, category, payment_type);
+    res.status(200).json({sum: result});
+});
 //retrieve the expenses from page*limit to page*limit +1 in specific month
 router.get('/multiple/:username/:month', applyValidationRules("get expenses by month"), validate, async function (req, res) {
     console.log('GET path /api/expense/multiple/:username/:month');
@@ -58,6 +88,17 @@ router.get('/multiple/:username/:month', applyValidationRules("get expenses by m
     const {category=".*", payment_type=".*"} = req.query;
     const result = await get_expenses_by_month(username, month, page_number, page_limit, category, payment_type);
     res.status(200).json(result);
+});
+
+router.get('/multiple-sum/:username/:month', applyValidationRules("get expenses by month"), validate, async function (req, res) {
+    console.log('GET path /api/expense/multiple/:username/:month');
+    const month = parseInt(req.params.month);
+    const page_number = parseInt(req.query.page_number);
+    const page_limit = parseInt(req.query.page_limit);
+    const username = req.params.username;
+    const {category=".*", payment_type=".*"} = req.query;
+    const result = await get_expenses_sum_month(username, month, page_number, page_limit, category, payment_type);
+    res.status(200).json({sum: result});
 });
 
 // delete the expense by id and all associated comments
