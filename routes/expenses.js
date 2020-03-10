@@ -36,6 +36,7 @@ router.patch('/:id',applyValidationRules("update expense"), validate, async func
         category: req.body.category,
         type: req.body.type,
         amount: parseFloat(req.body.amount),
+        date: new Date(req.body.date),
         payment_type: req.body.payment_type,
         description: req.body.description
     };
