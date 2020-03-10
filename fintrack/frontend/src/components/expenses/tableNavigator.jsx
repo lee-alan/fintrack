@@ -21,11 +21,10 @@ const useStyles = makeStyles(theme => ({
   rowSelecor: {
     flexShrink: "0",
     marginLeft: "8px",
-    marginRight: "8px",
+    marginRight: "10px",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center",
-    marginRight: "10px"
+    justifyContent: "center"
   },
   pageNumber: {
     flexShrink: "0",

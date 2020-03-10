@@ -111,7 +111,7 @@ export default function AddExpenseDialog(props) {
           });
         });
     }
-  }, [open]);
+  }, [open, loading, props.id]);
 
   // Reset form data
   const reset_form = () => {

@@ -223,7 +223,7 @@ export default function ExpensesTable(props) {
           rowsPerPageOptions={[5, 10, 25]}
           rowsPerPage={rowsPerPage}
           page={page}
-          maxPage={Math.floor(rows.length / rowsPerPage)}
+          maxPage={Math.floor((rows.length - 1) / rowsPerPage)}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />

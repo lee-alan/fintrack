@@ -8,6 +8,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import UpdateProfileForm from "../components/profile/updateProfile";
 import UpdatePasswordForm from "../components/profile/updatePassword";
 import "../style/main.css";
+import axios from "axios";
 
 const profile_img = require("../media/profile_image.png");
 const useStyles = makeStyles(() => ({
@@ -82,7 +83,6 @@ export default function ProfilePage(props) {
   };
 
   const classes = useStyles();
-  console.log("HERE");
   return (
     <div className={classes.root}>
       <MainTitle>Profile</MainTitle>

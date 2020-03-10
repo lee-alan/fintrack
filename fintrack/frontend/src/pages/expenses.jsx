@@ -37,11 +37,10 @@ function createData(data) {
 export default function ExpensePage(props) {
   const { user } = props;
   const [open, setOpen] = React.useState(false);
-  const [openFilter, setOpenFilter] = React.useState(false);
   const [loadRows, setLoadRows] = React.useState(true);
   const [rows, setRows] = React.useState([]);
   const loadMax = 101;
-  const currentPage = 1;
+  let currentPage = 1;
 
   React.useEffect(() => {
     if (loadRows) {
@@ -66,7 +65,7 @@ export default function ExpensePage(props) {
           console.log("Error: ", error.response);
         });
     }
-  }, [loadRows]);
+  }, [loadRows, user, currentPage]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -102,11 +101,7 @@ export default function ExpensePage(props) {
       >
         Add Expense
       </Button>
-      <ExpenseFilter
-        onSubmit={handleSearchQuery}
-        open={openFilter}
-        user={props.user}
-      />
+      <ExpenseFilter onSubmit={handleSearchQuery} user={props.user} />
       <AddExpenseDialog
         user={props.user}
         open={open}

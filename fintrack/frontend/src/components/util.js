@@ -66,3 +66,10 @@ class Util {
 }
 
 export let util = new Util();
+export let categories = [
+  "Home",
+  "Food",
+  "Entertainment",
+  "Travel",
+  "Miscellaneous"
+];
