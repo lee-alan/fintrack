@@ -88,12 +88,11 @@ export default function AddExpenseDialog(props) {
   // This effect will fetch data when the edit form is opened
   // This is so that data for all the expenses are not fetched at once
   React.useEffect(() => {
-    console.log("Get data is", props.id);
     // If open and loading is false then get the data for this expense
     if (props.id && open && loading) {
       //await new Promise(r => setTimeout(r, 2000));
       axios
-        .post("/api/expense/".concat(props.id), {})
+        .get("/api/expense/".concat(props.id), {})
         .then(response => {
           if (response.status === 200) {
             setSelectedDate(new Date(response.data.date));
@@ -102,7 +101,7 @@ export default function AddExpenseDialog(props) {
             setDescription(response.data.description);
             setIsExpense(response.data.type === "income" ? false : true);
             setAmount(response.data.amount);
-            setLoading(true);
+            setLoading(false);
           }
         })
         .catch(error => {
@@ -197,10 +196,9 @@ export default function AddExpenseDialog(props) {
     axios
       .post("/api/expense", d)
       .then(response => {
-        console.log("response.");
         if (response.status === 200) {
-          onAdd();
           handleClose();
+          onAdd();
         }
       })
       .catch(error => {

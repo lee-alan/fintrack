@@ -13,7 +13,8 @@ import Typography from "@material-ui/core/Typography";
 
 const NewDialog = withStyles({
   paper: {
-    margin: "20px"
+    margin: "20px",
+    padding: "10px"
   }
 })(Dialog);
 
@@ -147,6 +148,7 @@ export default function UpdatePasswordForm(props) {
         justify="center"
         alignContent="center"
         spacing={2}
+        style={{ width: "99%" }}
       >
         <Grid item>
           <Button

@@ -23,8 +23,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function createData(id, date, description, category, payment_type, amount) {
-  return { id, date, description, category, payment_type, amount };
+function createData(data) {
+  return {
+    id: data._id,
+    date: new Date(data.date),
+    description: data.description,
+    category: data.category,
+    payment_type: data.payment_type,
+    amount: data.amount
+  };
 }
 
 export default function ExpensePage(props) {
@@ -51,8 +58,9 @@ export default function ExpensePage(props) {
           )
         )
         .then(response => {
-          setRows(response.data);
+          setRows(response.data.map(createData));
           setLoadRows(false);
+          //console.log(rows);
         })
         .catch(error => {
           console.log("Error: ", error.response);
@@ -110,7 +118,12 @@ export default function ExpensePage(props) {
           <CircularProgress />
         </div>
       ) : (
-        <ExpensesTable rows={rows} user={props.user} loadMore={loadNextPage} />
+        <ExpensesTable
+          rows={rows}
+          user={props.user}
+          loadMore={loadNextPage}
+          onAdd={addNewExpense}
+        />
       )}
     </main>
   );

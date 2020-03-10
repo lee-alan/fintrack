@@ -12,6 +12,7 @@ import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Paper from "@material-ui/core/Paper";
 import ExpenseAction from "./expenseActions";
 import { util } from "../util";
+import TableNavigator from "./tableNavigator";
 
 /// Got start code/template from:
 // https://material-ui.com/components/tables/
@@ -138,7 +139,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function ExpensesTable(props) {
-  const { rows, loadMax, dbPage } = props;
+  const { rows, loadMax, dbPage, onAdd } = props;
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -149,6 +150,10 @@ export default function ExpensesTable(props) {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
+  };
+
+  const updateOnDelete = () => {
+    onAdd();
   };
 
   const handleChangePage = (event, newPage) => {
@@ -191,9 +196,9 @@ export default function ExpensesTable(props) {
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
-                    <TableRow hover tabIndex={-1} key={row.id}>
+                    <TableRow hover tabIndex={-1} key={index}>
                       <TableCell component="th" id={labelId} scope="row">
-                        {row.date}
+                        {util.formatDate(row.date)}
                       </TableCell>
                       <TableCell align="left">{row.description}</TableCell>
                       <TableCell align="right">{row.category}</TableCell>
@@ -202,7 +207,11 @@ export default function ExpensesTable(props) {
                         {util.formatToDollars(row.amount)}
                       </TableCell>
                       <TableCell align="right">
-                        <ExpenseAction user={props.user} id={row.id} />
+                        <ExpenseAction
+                          user={props.user}
+                          id={row.id}
+                          onAdd={updateOnDelete}
+                        />
                       </TableCell>
                     </TableRow>
                   );
@@ -210,12 +219,11 @@ export default function ExpensesTable(props) {
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
+        <TableNavigator
           rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
+          maxPage={Math.floor(rows.length / rowsPerPage)}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />

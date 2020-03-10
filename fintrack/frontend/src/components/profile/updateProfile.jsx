@@ -12,7 +12,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import clsx from "clsx";
 
-const NewDialog = withStyles({})(Dialog);
+const NewDialog = withStyles({ paper: { padding: "10px" } })(Dialog);
 
 const styles = makeStyles(() => ({
   prev: {
@@ -98,6 +98,7 @@ export default function UpdateProfileForm(props) {
       <Grid
         container
         className={classes.rootItem}
+        style={{ width: "99%" }}
         direction="row"
         justify="center"
         alignContent="center"

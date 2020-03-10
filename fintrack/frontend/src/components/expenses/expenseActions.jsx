@@ -9,13 +9,18 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import AddExpenseDialog from "./addExpense";
 import { Redirect } from "react-router-dom";
+import axios from "axios";
+import Dialog from "@material-ui/core/Dialog";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 const ITEM_HEIGHT = 48;
 
 export default function ExpenseActions(props) {
+  const { onAdd } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [openEdit, setOpenEdit] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const handleClickOpen = () => {
     setOpenEdit(true);
   };
@@ -35,7 +40,19 @@ export default function ExpenseActions(props) {
 
   const handleDelete = () => {
     // Delete msg
-    handleClose();
+    setLoading(true);
+    axios
+      .delete("/api/expense/".concat(props.id), {})
+      .then(res => {
+        if (res.status === 200) {
+          setLoading(false);
+          handleClose();
+          onAdd();
+        }
+      })
+      .catch(err => {
+        console.log("Error", err.response);
+      });
   };
 
   const handleEdit = () => {
@@ -85,7 +102,11 @@ export default function ExpenseActions(props) {
         user={props.user}
         open={openEdit}
         onClose={handleCloseEdit}
+        onAdd={onAdd}
       />
+      <Dialog disableBackdropClick maxWidth="sm" open={loading}>
+        <CircularProgress />
+      </Dialog>
     </div>
   );
 }
