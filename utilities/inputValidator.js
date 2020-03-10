@@ -41,7 +41,12 @@ exports.applyValidationRules = (endpoint) => {
                 check('payment_type').isIn(["cash", "credit", "debit"]).withMessage("Te payment type should be cash, credit or debit"),
             ]
         }
-
+        case "update expense": {
+            return [
+                check('type').isIn(["income", "expense"]).withMessage("The type of the expense should be either income or expense"),
+                check('payment_type').isIn(["cash", "credit", "debit"]).withMessage("Te payment type should be cash, credit or debit"),
+            ]
+        }
         case "get expenses": {
             return [
                 check('username').isLength({min: 5}).withMessage("Invalid username"),
