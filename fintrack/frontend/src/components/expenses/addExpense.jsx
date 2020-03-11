@@ -124,7 +124,7 @@ export default function AddExpenseDialog(props) {
     setCatError(false);
     setPayError(false);
     setDesError(false);
-    setLoading(false);
+    setLoading(props.id ? true : false);
   };
 
   const handleDateChange = date => {

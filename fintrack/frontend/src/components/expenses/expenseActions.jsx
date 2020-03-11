@@ -12,8 +12,26 @@ import { Redirect } from "react-router-dom";
 import axios from "axios";
 import Dialog from "@material-ui/core/Dialog";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 const ITEM_HEIGHT = 48;
+
+const NewDialog = withStyles({
+  paper: {
+    height: "70px",
+    width: "70px"
+  }
+})(Dialog);
+
+const useStyles = makeStyles(() => ({
+  loading: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  }
+}));
 
 export default function ExpenseActions(props) {
   const { onAdd } = props;
@@ -21,6 +39,8 @@ export default function ExpenseActions(props) {
   const open = Boolean(anchorEl);
   const [openEdit, setOpenEdit] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
+  const classes = useStyles();
+
   const handleClickOpen = () => {
     setOpenEdit(true);
   };
@@ -104,9 +124,11 @@ export default function ExpenseActions(props) {
         onClose={handleCloseEdit}
         onAdd={onAdd}
       />
-      <Dialog disableBackdropClick maxWidth="sm" open={loading}>
-        <CircularProgress />
-      </Dialog>
+      <NewDialog disableBackdropClick open={loading}>
+        <div className={classes.loading}>
+          <CircularProgress />
+        </div>
+      </NewDialog>
     </div>
   );
 }
