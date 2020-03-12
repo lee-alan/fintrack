@@ -89,6 +89,7 @@ router.post(
     hash.update(password);
     var saltedHash = hash.digest("base64");
     password = saltedHash;
+    console.log(password, salt);
     if (user.password !== password)
       return res.status(401).json({ error: "access denied" });
     // initialize cookie
@@ -170,21 +171,50 @@ router.patch("/profile/password",
     validate,
     async function(req, res) {
   console.log("path /api/user/profile/password");
-  let password = req.body.password;
-  let salt = crypto.randomBytes(16).toString("base64");
-  let hash = crypto.createHmac("sha512", salt);
-  hash.update(password);
-  let saltedHash = hash.digest("base64");
-  password = saltedHash;
-  const result = await update_password(req.body.username, password);
-  if (result && result.modifiedCount) {
-    return res
-      .status(200)
-      .json({ message: `Updated the password of the user ${req.body.username}` });
+  //check old password
+    const username = req.body.username;
+    let old_password = req.body.old_password;
+    const user = await find_user_by_username(username);
+    if (!user) {
+        return res
+            .status(409)
+            .json({ error: "User with this username does not exist" });
+    }
+    let salt = user.salt;
+    let old_hash = crypto.createHmac("sha512", salt);
+    old_hash.update(old_password);
+    let saltedHash = old_hash.digest("base64");
+    old_password = saltedHash;
+    if (user.password !== old_password)
+        return res.status(401).json({ error: " old passwords don't patch" });
+    let new_password = req.body.new_password;
+    let new_salt = crypto.randomBytes(16).toString("base64");
+    let new_hash = crypto.createHmac("sha512", new_salt);
+    new_hash.update(new_password);
+    let new_saltedHash = new_hash.digest("base64");
+    new_password = new_saltedHash;
+    const result = await update_password(req.body.username, new_password, new_salt);
+    if (result && result.modifiedCount) {
+        return res
+          .status(200)
+          .json({ message: `Updated the password of the user ${req.body.username}` });
   }
   return res.status(404).json({
     error: "User with the given username not found."
   });
+});
+
+//get user info by username
+
+router.get('/info/:username', async function(req, res){
+    let result = await find_user_by_username(req.params.username);
+    if(result){
+        delete result._id; delete result.password; delete result.salt; delete result.tickers;
+        return res.status(200).json(result);
+    }
+    return res.status(404).json({
+        error: "User with the given username not found."
+    });
 });
 
 //export the router

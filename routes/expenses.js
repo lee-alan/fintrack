@@ -17,7 +17,7 @@ router.post('/',applyValidationRules("create expense"), validate, async function
         category: req.body.category,
         type: req.body.type,
         amount: parseFloat(req.body.amount),
-        date: new Date(),
+        date: new Date(req.body.date),
         payment_type: req.body.payment_type,
         description: req.body.description
     };
@@ -59,25 +59,51 @@ router.get('/:id', async function (req, res) {
 });
 
 // retrieve the expenses from page*limit to page*limit +1
+// router.get('/multiple/:username', applyValidationRules("get expenses"), validate,async function (req, res) {
+//     console.log('GET path /api/expense/multiple/:username');
+//     const username = req.params.username;
+//     const page_number = parseInt(req.query.page_number);
+//     const page_limit = parseInt(req.query.page_limit);
+//     const {category=".*", payment_type=".*", type=".*"} = req.query;
+//     const result = await get_expenses(page_number, page_limit, username, category, payment_type, type);
+//     res.status(200).json(result);
+// });
+
+//retrieve expenses by start and end date
+// retrieve the expenses from page*limit to page*limit +1
 router.get('/multiple/:username', applyValidationRules("get expenses"), validate,async function (req, res) {
     console.log('GET path /api/expense/multiple/:username');
     const username = req.params.username;
     const page_number = parseInt(req.query.page_number);
     const page_limit = parseInt(req.query.page_limit);
-    const {category=".*", payment_type=".*"} = req.query;
-    const result = await get_expenses(page_number, page_limit, username, category, payment_type);
+    let {category=".*", payment_type, type, start=new Date('01/01/2000'), end=new Date()} = req.query;
+    start = new Date(start);
+    start = start.setDate(start.getDate() - 1);
+    start = new Date(start);
+    end = new Date(end);
+    console.log(start, end);
+    const result = await get_expenses(page_number, page_limit, username, category, payment_type, type, start, end);
     res.status(200).json(result);
 });
 
-router.get('/multiple-sum/:username', applyValidationRules("get expenses"), validate,async function (req, res) {
-    console.log('GET path /api/expense/multiple/:username');
+
+
+
+router.get('/multiple-sum/:username', applyValidationRules("get expenses sum"), validate,async function (req, res) {
+    console.log('GET path /api/expense/multiple-sum/:username');
     const username = req.params.username;
     const page_number = parseInt(req.query.page_number);
     const page_limit = parseInt(req.query.page_limit);
-    const {category=".*", payment_type=".*"} = req.query;
-    const result = await get_expenses_sum(page_number, page_limit, username, category, payment_type);
+    let {category=".*", payment_type, type, start=new Date('01/01/2000'), end=new Date()} = req.query;
+    start = new Date(start);
+    start = start.setDate(start.getDate() - 1);
+    start = new Date(start);
+    end = new Date(end);
+    console.log(start, end);
+    const result = await get_expenses_sum(page_number, page_limit, username, category, payment_type, type, start, end);
     res.status(200).json({sum: result});
 });
+
 //retrieve the expenses from page*limit to page*limit +1 in specific month
 router.get('/multiple/:username/:month', applyValidationRules("get expenses by month"), validate, async function (req, res) {
     console.log('GET path /api/expense/multiple/:username/:month');
@@ -85,19 +111,19 @@ router.get('/multiple/:username/:month', applyValidationRules("get expenses by m
     const page_number = parseInt(req.query.page_number);
     const page_limit = parseInt(req.query.page_limit);
     const username = req.params.username;
-    const {category=".*", payment_type=".*"} = req.query;
-    const result = await get_expenses_by_month(username, month, page_number, page_limit, category, payment_type);
+    const {category=".*", payment_type=".*", type} = req.query;
+    const result = await get_expenses_by_month(username, month, page_number, page_limit, category, payment_type, type);
     res.status(200).json(result);
 });
 
-router.get('/multiple-sum/:username/:month', applyValidationRules("get expenses by month"), validate, async function (req, res) {
+router.get('/multiple-sum/:username/:month', applyValidationRules("get expenses sum by month"), validate, async function (req, res) {
     console.log('GET path /api/expense/multiple/:username/:month');
     const month = parseInt(req.params.month);
     const page_number = parseInt(req.query.page_number);
     const page_limit = parseInt(req.query.page_limit);
     const username = req.params.username;
-    const {category=".*", payment_type=".*"} = req.query;
-    const result = await get_expenses_sum_month(username, month, page_number, page_limit, category, payment_type);
+    const {category=".*", payment_type=".*", type} = req.query;
+    const result = await get_expenses_sum_month(username, month, page_number, page_limit, category, payment_type, type);
     res.status(200).json({sum: result});
 });
 
