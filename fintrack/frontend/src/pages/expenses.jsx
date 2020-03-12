@@ -54,7 +54,7 @@ export default function ExpensePage(props) {
             currentPage,
             "&page_limit=",
             loadMax,
-            "&payment_type=.*&category=.*"
+            "&payment_type=.*&category=.*&type=.*"
           )
         )
         .then(response => {
