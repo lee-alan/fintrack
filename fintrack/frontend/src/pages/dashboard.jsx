@@ -4,60 +4,12 @@ import "../style/dashboard.css";
 import ExpenseDash from "../components/dashboard/expenseOverview";
 import InvestDash from "../components/dashboard/investmentsOverview";
 import Container from "@material-ui/core/Container";
-import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import { withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import MainTitle from "../components/pageTitle";
 
-/*
-<div className="dash_section">
-          <ExpenseDash user={this.props.user} />
-          <InvestmentsDash user={this.props.user} />
-        </div>
-*/
-class DashBoard extends Component {
-  state = {};
-  render() {
-    const { classes } = this.props;
-    const fixedHeightPaper = clsx(
-      classes.paper,
-      classes.fixedHeight,
-      classes.hover_paper
-    );
-
-    return (
-      <main className={classes.content}>
-        <MainTitle>DashBoard</MainTitle>
-        <div className={classes.appBarSpacer} />
-        <Container maxWidth="lg" className={classes.container}>
-          <Grid container spacing={3}>
-            <Grid
-              container
-              direction="row"
-              justify="center"
-              alignItems="center"
-              spacing={3}
-            >
-              <Grid item xs={6} className={classes.dash_item}>
-                <Paper className={fixedHeightPaper}>
-                  <ExpenseDash />
-                </Paper>
-              </Grid>
-              <Grid item xs={6} className={classes.dash_item}>
-                <Paper className={fixedHeightPaper}>
-                  <InvestDash />
-                </Paper>
-              </Grid>
-            </Grid>
-          </Grid>
-        </Container>
-      </main>
-    );
-  }
-}
-
-const styles = theme => ({
+const styles = makeStyles(theme => ({
   root: {
     display: "flex"
   },
@@ -66,19 +18,24 @@ const styles = theme => ({
   },
   container: {
     paddingTop: theme.spacing(4),
-    paddingBottom: theme.spacing(4)
+    paddingBottom: theme.spacing(4),
+    display: "flex",
+    flexDirection: "row",
+    flexWrap: "wrap"
   },
   dash_item: {
-    minWidth: "max(400px, 50%)"
+    width: "350px",
+    margin: "24px"
   },
   paper: {
-    padding: theme.spacing(2),
+    padding: "5px",
     display: "flex",
-    overflow: "auto",
-    flexDirection: "column"
+    flexDirection: "column",
+    width: "100%",
+    height: "100%"
   },
   fixedHeight: {
-    height: 350
+    height: "200px"
   },
   hover_paper: {
     cursor: "pointer !important",
@@ -88,7 +45,64 @@ const styles = theme => ({
       border: "1px solid black",
       boxShadow: "10px 5px 5px grey"
     }
+  },
+  expandedDashItem: {
+    height: "500px",
+    width: "max(800px, 80%)",
+    margin: "24px"
   }
-});
+}));
 
-export default withStyles(styles, { withTheme: true })(DashBoard);
+export default function DashBoard(props) {
+  const { user } = props;
+  const classes = styles();
+  const [expDashClass, setExpDashClass] = React.useState(
+    clsx(classes.fixedHeight, classes.dash_item)
+  );
+  const [invDashClass, setInvDashClass] = React.useState(
+    clsx(classes.dash_item, classes.fixedHeight)
+  );
+  const [expExpanded, setExpExpanded] = React.useState(false);
+  const [invExpanded, setInvExpanded] = React.useState(false);
+
+  const expandExpDash = () => {
+    let cl = !expExpanded
+      ? clsx(classes.expandedDashItem)
+      : clsx(classes.fixedHeight, classes.dash_item);
+    setExpDashClass(cl);
+    setExpExpanded(!expExpanded);
+  };
+
+  const expandInvDash = () => {
+    let cl = !invExpanded
+      ? clsx(classes.expandedDashItem)
+      : clsx(classes.fixedHeight, classes.dash_item);
+    setInvDashClass(cl);
+    setInvExpanded(!invExpanded);
+  };
+
+  return (
+    <main className={classes.content}>
+      <MainTitle>DashBoard</MainTitle>
+      <div className={classes.appBarSpacer} />
+      <Container maxWidth="lg" className={classes.container}>
+        <div className={expDashClass}>
+          <Paper
+            className={clsx(classes.paper, classes.hover_paper)}
+            onClick={expandExpDash}
+          >
+            <ExpenseDash user={user} expanded={expExpanded} />
+          </Paper>
+        </div>
+        <div className={invDashClass}>
+          <Paper
+            className={clsx(classes.paper, classes.hover_paper)}
+            onClick={expandInvDash}
+          >
+            <InvestDash user={user} expanded={invExpanded} />
+          </Paper>
+        </div>
+      </Container>
+    </main>
+  );
+}

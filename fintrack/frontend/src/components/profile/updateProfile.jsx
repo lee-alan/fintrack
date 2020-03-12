@@ -61,6 +61,13 @@ export default function UpdateProfileForm(props) {
     setNewField(event.target.value);
   };
 
+  const close = () => {
+    setNewField("");
+    setErrorField("");
+    setError("");
+    onClose();
+  };
+
   const handleSubmit = () => {
     // Make either an axios update email or salary call
     if (newField === "") {
@@ -68,7 +75,7 @@ export default function UpdateProfileForm(props) {
       return null;
     }
     setLoading(true);
-    onClose();
+    close();
   };
 
   const form = loading ? (
@@ -109,7 +116,7 @@ export default function UpdateProfileForm(props) {
             variant="contained"
             color="primary"
             startIcon={<SaveAltIcon />}
-            onClick={handleSubmit}
+            type="submit"
           >
             Save
           </Button>
@@ -119,7 +126,7 @@ export default function UpdateProfileForm(props) {
             variant="contained"
             color="secondary"
             startIcon={<ClearIcon />}
-            onClick={onClose}
+            onClick={close}
           >
             Cancel
           </Button>

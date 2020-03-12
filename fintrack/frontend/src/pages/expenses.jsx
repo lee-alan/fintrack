@@ -30,7 +30,8 @@ function createData(data) {
     description: data.description,
     category: data.category,
     payment_type: data.payment_type,
-    amount: data.amount
+    amount: data.amount,
+    isExpense: data.type === "income" ? false : true
   };
 }
 

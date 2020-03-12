@@ -72,7 +72,9 @@ $ curl -X POST
 - request: `PATCH /api/user/profile/password`
   - content-type: `application/json`
   - body: object
-    - password: (string) new Password must be different from old
+    - username
+    - old_password
+    - new_password: (string) new Password must be different from old
 - response: 200
 
 ---
@@ -133,14 +135,17 @@ All the below api require a session from the above login api
 ---
 
 - description: retrieve the expenses from page\*limit to page\*limit +1
-- request: `GET /api/expenses/`
+- request: `GET /api/expense/multiple/:username`
   - request parameters:
   - content-type: `application/json
   - query parameters:
     - page_number: (int) page number (starts with 1)
     - page limit: (int) page limit
+    - type
     - category: (string)[optional] Get expenses that are of this category (if this is null ignore)
     - payment_type: (string)[optional] Get expenses that of of this type (if null ignore)
+    - start: mm/dd/yyyy
+    - end: mm/dd/yyyy
 - response: 200
   - content-type: `application/json`
   - body: list
@@ -156,12 +161,7 @@ All the below api require a session from the above login api
     
     ```
     $ curl -b cookie.txt -X GET
-           http://localhost:3003/api/expense/multiple?page_number=1&page_limit=2
-    ```
-
-    ```
-    $ curl -b cookie.txt -X GET
-           http://localhost:3003/api/expense/multiple?page_number=1&page_limit=2
+           localhost:5000/api/expense/multiple/ram11?page_number=1&page_limit=10&payment_type=cash&type=expense&category=.*&start=01/01/2000&end=03/12/2001
     ```
 
 ---
@@ -174,6 +174,7 @@ All the below api require a session from the above login api
     - page_limit: (int) page limit
     - category: (string)[optional] Get expenses that are of this category (=.* to match everything)
     - payment_type: (string)[optional] Get expenses that of of this type (=.* to match everything)
+    - type
 - response: 200
   - content-type: `application/json`
   - body: list
