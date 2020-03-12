@@ -1,9 +1,12 @@
 /* jshint esversion: 6 */
 import React, { Component } from "react";
+import SearchTicker from "../components/investments/SearchTicker";
+
 import '../style/investments.css';
 import axios from "axios";
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
+
 
 const Plot = createPlotlyComponent(Plotly);
 
@@ -16,6 +19,7 @@ class InvestmentsPage extends Component {
       chart_x_val: [],
       chart_y_val: [],
       current_chart: "",
+      adding_ticker: true
     };
   }
   
@@ -34,18 +38,11 @@ class InvestmentsPage extends Component {
   componentDidMount() {
     this.getTicker(); // get tickers from user profile
   }
-  /*
-  componentDidUpdate() {
-    setTimeout(function(){
-      this.getTicker();
-    }.bind(this), 3000);
-  }
-  */
+  
   getTicker() {
     try {
       // update later to be for any general username
       axios.get('/api/investments/getTickers/' + this.props.user + '/').then(response => {
-        //console.log(response.data[0].tickers[0]);
         
         if (response !== "no tickers") {
           const This = this;
@@ -70,7 +67,6 @@ class InvestmentsPage extends Component {
     let tickers = this.state.user_tickers.join(',');
     
     axios.get('/api/investments/daily/batch/' + tickers + '/').then(response => {
-      //console.log(response.data);
       let data = response.data;
       This.setState({
         user_tickers_data: data // list of dictionaries
@@ -104,7 +100,37 @@ class InvestmentsPage extends Component {
     }
   }
   
-  
+  addTicker(ticker) {
+    const This = this;
+
+    try { // /addticker/:username/:ticker/
+      axios.post('/api/investments/addticker/' + this.props.user + '/' + ticker + '/').then(response => {
+        let usertickers = this.state.user_tickers.slice();
+        usertickers.push(ticker);
+
+        This.setState({
+          adding_ticker: true,
+          user_tickers: usertickers
+        });
+        // fetch new data for all tickers and update state
+        this.getChartingDataBatch(ticker);
+      });
+    } catch (e) {
+      console.error(e, "error adding ticker");
+    }
+  }
+
+  handleSearch(ticker) {
+    let t = ticker.toUpperCase();
+    
+    // validate ticker
+    // add ticker to user database
+    this.addTicker(t);
+    // update state
+    // get ticker data
+    //this.getChartingDataBatch(ticker);
+  }
+
   render() {
     return (
       //<h1>InvestmentsPage</h1>
@@ -124,13 +150,16 @@ class InvestmentsPage extends Component {
             layout={ {autosize: true, title: 'Daily Time Series ' + this.state.current_chart} }
           />
         </div>
+        
         <div id="ticker_component">
+          <SearchTicker onSearch={this.handleSearch.bind(this)} />
           {this.state.user_tickers_data.data.map((dict) => 
             <div id={"ticker_container_" + dict.symbol} className="ticker_container" key={dict.symbol}>
               <span className="left">{dict.symbol}</span>
               <span className="right">{dict.price}</span>
             </div>
           )}
+
         </div>
       </div>
     );
