@@ -1,11 +1,13 @@
 /* jshint esversion: 6 */
 import React, { Component } from "react";
 import SearchTicker from "../components/investments/SearchTicker";
+import Loading from "../components/utilities/loading";
 
 import '../style/investments.css';
 import axios from "axios";
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
+import { connect } from "mongodb";
 
 
 const Plot = createPlotlyComponent(Plotly);
@@ -19,7 +21,7 @@ class InvestmentsPage extends Component {
       chart_x_val: [],
       chart_y_val: [],
       current_chart: "",
-      adding_ticker: true
+      adding_ticker: false
     };
   }
   
@@ -65,9 +67,10 @@ class InvestmentsPage extends Component {
   getChartingDataBatch() {
     const This = this;
     let tickers = this.state.user_tickers.join(',');
-    
+    console.log(tickers);
     axios.get('/api/investments/daily/batch/' + tickers + '/').then(response => {
       let data = response.data;
+      
       This.setState({
         user_tickers_data: data // list of dictionaries
       });
@@ -104,16 +107,23 @@ class InvestmentsPage extends Component {
     const This = this;
 
     try { // /addticker/:username/:ticker/
+      This.setState({
+        adding_ticker: true,
+      });
       axios.post('/api/investments/addticker/' + this.props.user + '/' + ticker + '/').then(response => {
         let usertickers = this.state.user_tickers.slice();
         usertickers.push(ticker);
-
+        console.log(ticker);
         This.setState({
-          adding_ticker: true,
           user_tickers: usertickers
         });
+
         // fetch new data for all tickers and update state
         this.getChartingDataBatch(ticker);
+        
+        This.setState({
+          adding_ticker: false
+        });
       });
     } catch (e) {
       console.error(e, "error adding ticker");
@@ -153,6 +163,7 @@ class InvestmentsPage extends Component {
         
         <div id="ticker_component">
           <SearchTicker onSearch={this.handleSearch.bind(this)} />
+          <Loading loading={this.state.adding_ticker}/>
           {this.state.user_tickers_data.data.map((dict) => 
             <div id={"ticker_container_" + dict.symbol} className="ticker_container" key={dict.symbol}>
               <span className="left">{dict.symbol}</span>
