@@ -200,7 +200,7 @@ router.patch("/profile/password",
           .json({ message: `Updated the password of the user ${req.body.username}` });
   }
   return res.status(404).json({
-    error: "User with the given username not found."
+    error: "User with the given username not found or the new password is the same as the old one."
   });
 });
 
