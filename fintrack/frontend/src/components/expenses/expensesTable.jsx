@@ -6,13 +6,14 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
-import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Paper from "@material-ui/core/Paper";
 import ExpenseAction from "./expenseActions";
 import { util } from "../util";
 import TableNavigator from "./tableNavigator";
+import Tooltip from "@material-ui/core/Tooltip";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 
 /// Got start code/template from:
 // https://material-ui.com/components/tables/
@@ -44,6 +45,12 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
+  {
+    id: "income_expense_flag",
+    numeric: false,
+    disablePadding: true,
+    label: ""
+  },
   {
     id: "date",
     numeric: false,
@@ -88,18 +95,24 @@ function EnhancedTableHead(props) {
             padding={headCell.disablePadding ? "none" : "default"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </span>
-              ) : null}
-            </TableSortLabel>
+            {headCell.id === "date" || headCell.id === "amount" ? (
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : "asc"}
+                onClick={createSortHandler(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <span className={classes.visuallyHidden}>
+                    {order === "desc"
+                      ? "sorted descending"
+                      : "sorted ascending"}
+                  </span>
+                ) : null}
+              </TableSortLabel>
+            ) : (
+              headCell.label
+            )}
           </TableCell>
         ))}
       </TableRow>
@@ -176,7 +189,8 @@ export default function ExpensesTable(props) {
             aria-label="enhanced table"
           >
             <colgroup>
-              <col style={{ width: "20%" }} />
+              <col style={{ width: "5%" }} />
+              <col style={{ width: "25%" }} />
               <col style={{ width: "40%" }} />
               <col style={{ width: "10%" }} />
               <col style={{ width: "10%" }} />
@@ -197,6 +211,17 @@ export default function ExpensesTable(props) {
 
                   return (
                     <TableRow hover tabIndex={-1} key={index}>
+                      <TableCell align="center">
+                        {row.isExpense ? (
+                          <Tooltip title="Expense" placement="top">
+                            <FiberManualRecordIcon style={{ color: "red" }} />
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title="Income" placement="top">
+                            <FiberManualRecordIcon style={{ color: "green" }} />
+                          </Tooltip>
+                        )}
+                      </TableCell>
                       <TableCell component="th" id={labelId} scope="row">
                         {util.formatDate(row.date)}
                       </TableCell>

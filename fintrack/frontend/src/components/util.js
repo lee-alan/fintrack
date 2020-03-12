@@ -1,4 +1,19 @@
 class Util {
+  months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+  ];
+
   formatToDollars(n) {
     // Money only has 2 decimals places
     if (!n) {
@@ -22,24 +37,10 @@ class Util {
   }
 
   formatDate(date, month = true, day = true, year = true) {
-    const months = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December"
-    ];
     let dateStr = "";
 
     if (month) {
-      dateStr = dateStr.concat(months[date.getMonth()]);
+      dateStr = dateStr.concat(this.months[date.getMonth()]);
     }
     if (day) {
       dateStr = dateStr.concat(" ", date.getDate());
@@ -62,6 +63,15 @@ class Util {
       timeStr = timeStr.concat(":", date.getSeconds());
     }
     return timeStr;
+  }
+
+  getCurrentMonth() {
+    return this.months[new Date().getMonth()];
+  }
+
+  getFirstDayOfMonth() {
+    let curDate = new Date();
+    return new Date(curDate.getFullYear(), curDate.getMonth(), 1);
   }
 }
 

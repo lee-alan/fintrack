@@ -19,7 +19,7 @@ import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
 } from "@material-ui/pickers";
-import { categories } from "../util";
+import { categories, util } from "../util";
 
 // Filter starter code is from:
 // https://material-ui.com/components/expansion-panels/
@@ -75,7 +75,7 @@ const MenuProps = {
 export default function ExpenseFilter(props) {
   const { onSubmit, user } = props;
   const [open, setOpen] = React.useState(false);
-  const [startDate, setStartDate] = React.useState(new Date(0));
+  const [startDate, setStartDate] = React.useState(util.getFirstDayOfMonth);
   const [endDate, setEndDate] = React.useState(new Date());
   const [categorySelected, setCategorySelected] = React.useState([]);
   const [paymentSelected, setPaymentSelected] = React.useState([]);
@@ -222,16 +222,16 @@ export default function ExpenseFilter(props) {
             </div>
             <div className={classes.flexRow}>
               <FormControl className={classes.categoryForm}>
-                <InputLabel id="payment_label">Payment Type</InputLabel>
+                <InputLabel id="payment_label">Expense Type</InputLabel>
                 <Select
                   labelId="payment_label"
                   id="select_payment"
                   value={type}
                   onChange={changeType}
                 >
-                  <MenuItem value="credit">All</MenuItem>
-                  <MenuItem value="debit">Debit</MenuItem>
-                  <MenuItem value="cash">Cash</MenuItem>
+                  <MenuItem value="all">All</MenuItem>
+                  <MenuItem value="expense">Expenses</MenuItem>
+                  <MenuItem value="income">Income</MenuItem>
                 </Select>
               </FormControl>
             </div>
