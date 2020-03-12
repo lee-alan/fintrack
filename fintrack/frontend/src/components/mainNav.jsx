@@ -192,14 +192,15 @@ class NavigationBar extends Component {
             }
           }}
         >
-          <MenuItem key="profile" onClick={this.handleProfile}>
-            <ListItemIcon>
-              <PersonOutlineIcon fontSize="small" />
-            </ListItemIcon>
-            <Link to="/profile" className="no_text_decor link">
+          <Link to="/profile" className="no_text_decor link">
+            <MenuItem key="profile">
+              <ListItemIcon>
+                <PersonOutlineIcon fontSize="small" />
+              </ListItemIcon>
               <ListItemText primary="Profile" />
-            </Link>
-          </MenuItem>
+            </MenuItem>
+          </Link>
+
           <MenuItem key="signout" onClick={this.signOut}>
             <ListItemIcon>
               <ExitToAppIcon fontSize="small" />

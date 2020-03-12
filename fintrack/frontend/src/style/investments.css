@@ -1,0 +1,23 @@
+
+/*
+body {
+    background: #f1f1f1;
+    padding:48px;
+}
+*/
+
+div.ticker_container {
+    background:white;
+    box-shadow: 1px 1px 0 lightgrey;
+    width: 70%;
+    margin: 5px auto 4px auto;
+    padding: 1em;
+}
+
+span.right {
+    float: right;
+}
+
+span.left {
+    font-weight: bold;
+}

@@ -9,13 +9,38 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import AddExpenseDialog from "./addExpense";
 import { Redirect } from "react-router-dom";
+import axios from "axios";
+import Dialog from "@material-ui/core/Dialog";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
 
 const ITEM_HEIGHT = 48;
 
+const NewDialog = withStyles({
+  paper: {
+    height: "70px",
+    width: "70px"
+  }
+})(Dialog);
+
+const useStyles = makeStyles(() => ({
+  loading: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
+  }
+}));
+
 export default function ExpenseActions(props) {
+  const { onAdd } = props;
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
   const [openEdit, setOpenEdit] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const classes = useStyles();
+
   const handleClickOpen = () => {
     setOpenEdit(true);
   };
@@ -35,7 +60,19 @@ export default function ExpenseActions(props) {
 
   const handleDelete = () => {
     // Delete msg
-    handleClose();
+    setLoading(true);
+    axios
+      .delete("/api/expense/".concat(props.id), {})
+      .then(res => {
+        if (res.status === 200) {
+          setLoading(false);
+          handleClose();
+          onAdd();
+        }
+      })
+      .catch(err => {
+        console.log("Error", err.response);
+      });
   };
 
   const handleEdit = () => {
@@ -85,7 +122,13 @@ export default function ExpenseActions(props) {
         user={props.user}
         open={openEdit}
         onClose={handleCloseEdit}
+        onAdd={onAdd}
       />
+      <NewDialog disableBackdropClick open={loading}>
+        <div className={classes.loading}>
+          <CircularProgress />
+        </div>
+      </NewDialog>
     </div>
   );
 }

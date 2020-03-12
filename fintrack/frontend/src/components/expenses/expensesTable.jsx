@@ -6,12 +6,14 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
-import TablePagination from "@material-ui/core/TablePagination";
 import TableRow from "@material-ui/core/TableRow";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Paper from "@material-ui/core/Paper";
 import ExpenseAction from "./expenseActions";
 import { util } from "../util";
+import TableNavigator from "./tableNavigator";
+import Tooltip from "@material-ui/core/Tooltip";
+import FiberManualRecordIcon from "@material-ui/icons/FiberManualRecord";
 
 /// Got start code/template from:
 // https://material-ui.com/components/tables/
@@ -43,6 +45,12 @@ function stableSort(array, comparator) {
 }
 
 const headCells = [
+  {
+    id: "income_expense_flag",
+    numeric: false,
+    disablePadding: true,
+    label: ""
+  },
   {
     id: "date",
     numeric: false,
@@ -87,18 +95,24 @@ function EnhancedTableHead(props) {
             padding={headCell.disablePadding ? "none" : "default"}
             sortDirection={orderBy === headCell.id ? order : false}
           >
-            <TableSortLabel
-              active={orderBy === headCell.id}
-              direction={orderBy === headCell.id ? order : "asc"}
-              onClick={createSortHandler(headCell.id)}
-            >
-              {headCell.label}
-              {orderBy === headCell.id ? (
-                <span className={classes.visuallyHidden}>
-                  {order === "desc" ? "sorted descending" : "sorted ascending"}
-                </span>
-              ) : null}
-            </TableSortLabel>
+            {headCell.id === "date" || headCell.id === "amount" ? (
+              <TableSortLabel
+                active={orderBy === headCell.id}
+                direction={orderBy === headCell.id ? order : "asc"}
+                onClick={createSortHandler(headCell.id)}
+              >
+                {headCell.label}
+                {orderBy === headCell.id ? (
+                  <span className={classes.visuallyHidden}>
+                    {order === "desc"
+                      ? "sorted descending"
+                      : "sorted ascending"}
+                  </span>
+                ) : null}
+              </TableSortLabel>
+            ) : (
+              headCell.label
+            )}
           </TableCell>
         ))}
       </TableRow>
@@ -138,7 +152,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export default function ExpensesTable(props) {
-  const { rows } = props;
+  const { rows, loadMax, dbPage, onAdd } = props;
   const classes = useStyles();
   const [order, setOrder] = React.useState("asc");
   const [orderBy, setOrderBy] = React.useState("calories");
@@ -149,6 +163,10 @@ export default function ExpensesTable(props) {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
+  };
+
+  const updateOnDelete = () => {
+    onAdd();
   };
 
   const handleChangePage = (event, newPage) => {
@@ -171,7 +189,8 @@ export default function ExpensesTable(props) {
             aria-label="enhanced table"
           >
             <colgroup>
-              <col style={{ width: "20%" }} />
+              <col style={{ width: "5%" }} />
+              <col style={{ width: "25%" }} />
               <col style={{ width: "40%" }} />
               <col style={{ width: "10%" }} />
               <col style={{ width: "10%" }} />
@@ -191,18 +210,33 @@ export default function ExpensesTable(props) {
                   const labelId = `enhanced-table-checkbox-${index}`;
 
                   return (
-                    <TableRow hover tabIndex={-1} key={row.id}>
+                    <TableRow hover tabIndex={-1} key={index}>
+                      <TableCell align="center">
+                        {row.isExpense ? (
+                          <Tooltip title="Expense" placement="top">
+                            <FiberManualRecordIcon style={{ color: "red" }} />
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title="Income" placement="top">
+                            <FiberManualRecordIcon style={{ color: "green" }} />
+                          </Tooltip>
+                        )}
+                      </TableCell>
                       <TableCell component="th" id={labelId} scope="row">
-                        {row.date}
+                        {util.formatDate(row.date)}
                       </TableCell>
                       <TableCell align="left">{row.description}</TableCell>
                       <TableCell align="right">{row.category}</TableCell>
-                      <TableCell align="right">{row.paymentType}</TableCell>
+                      <TableCell align="right">{row.payment_type}</TableCell>
                       <TableCell align="right">
                         {util.formatToDollars(row.amount)}
                       </TableCell>
                       <TableCell align="right">
-                        <ExpenseAction user={props.user} id={row.id} />
+                        <ExpenseAction
+                          user={props.user}
+                          id={row.id}
+                          onAdd={updateOnDelete}
+                        />
                       </TableCell>
                     </TableRow>
                   );
@@ -210,12 +244,11 @@ export default function ExpensesTable(props) {
             </TableBody>
           </Table>
         </TableContainer>
-        <TablePagination
+        <TableNavigator
           rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
           rowsPerPage={rowsPerPage}
           page={page}
+          maxPage={Math.floor((rows.length - 1) / rowsPerPage)}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />

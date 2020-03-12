@@ -123,7 +123,7 @@ class LoginPage extends Component {
               variant="contained"
               color="primary"
               className={classes.submit}
-              onClick={this.signup}
+              type="submit"
             >
               Login
             </Button>

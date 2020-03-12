@@ -6,42 +6,83 @@ import { Button } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import AddExpenseDialog from "../components/expenses/addExpense";
 import ExpenseFilter from "../components/expenses/expenseFilter";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import axios from "axios";
 
 const useStyles = makeStyles(theme => ({
   button: {
     margin: theme.spacing(1),
     marginBottom: "10px"
+  },
+  loading: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
   }
 }));
 
-function createData(id, date, description, category, paymentType, amount) {
-  return { id, date, description, category, paymentType, amount };
+function createData(data) {
+  return {
+    id: data._id,
+    date: new Date(data.date),
+    description: data.description,
+    category: data.category,
+    payment_type: data.payment_type,
+    amount: data.amount,
+    isExpense: data.type === "income" ? false : true
+  };
 }
 
 export default function ExpensePage(props) {
+  const { user } = props;
   const [open, setOpen] = React.useState(false);
-  const [openFilter, setOpenFilter] = React.useState(false);
+  const [loadRows, setLoadRows] = React.useState(true);
+  const [rows, setRows] = React.useState([]);
+  const loadMax = 101;
+  let currentPage = 1;
+
+  React.useEffect(() => {
+    if (loadRows) {
+      // Query database and load new
+      axios
+        .get(
+          "/api/expense/multiple/".concat(
+            user,
+            "?page_number=",
+            currentPage,
+            "&page_limit=",
+            loadMax,
+            "&payment_type=.*&category=.*"
+          )
+        )
+        .then(response => {
+          setRows(response.data.map(createData));
+          setLoadRows(false);
+          //console.log(rows);
+        })
+        .catch(error => {
+          console.log("Error: ", error.response);
+        });
+    }
+  }, [loadRows, user, currentPage]);
+
   const handleClickOpen = () => {
     setOpen(true);
   };
-  const rows = [
-    createData(1, "March 4", "Walmart", "Home", "credit", 67),
-    createData(2, "March 4", "Pizza Pizza", "Food", "credit", 12),
-    createData(3, "March 3", "Gift to Alan", "Gift", "credit", 35.7),
-    createData(4, "March 2", "Rent", "Home", "debit", 930),
-    createData(
-      5,
-      "March 2",
-      "New computer",
-      "Entertainment",
-      "credit",
-      1199.99
-    ),
-    createData(6, "March 1", "TTC", "Travel", "credit", 105.1)
-  ];
 
   const handleSearchQuery = query => {
     // Call backend and fill rows with relevant data
+  };
+
+  const addNewExpense = () => {
+    setLoadRows(true);
+  };
+
+  const loadNextPage = () => {
+    currentPage += 1;
+    setLoadRows(true);
   };
 
   const handleClose = value => {
@@ -61,13 +102,25 @@ export default function ExpensePage(props) {
       >
         Add Expense
       </Button>
-      <ExpenseFilter
-        onSubmit={handleSearchQuery}
-        open={openFilter}
+      <ExpenseFilter onSubmit={handleSearchQuery} user={props.user} />
+      <AddExpenseDialog
         user={props.user}
+        open={open}
+        onClose={handleClose}
+        onAdd={addNewExpense}
       />
-      <AddExpenseDialog user={props.user} open={open} onClose={handleClose} />
-      <ExpensesTable rows={rows} user={props.user} />
+      {loadRows ? (
+        <div className={classes.loading}>
+          <CircularProgress />
+        </div>
+      ) : (
+        <ExpensesTable
+          rows={rows}
+          user={props.user}
+          loadMore={loadNextPage}
+          onAdd={addNewExpense}
+        />
+      )}
     </main>
   );
 }

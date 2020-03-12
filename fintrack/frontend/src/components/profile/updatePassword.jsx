@@ -13,7 +13,8 @@ import Typography from "@material-ui/core/Typography";
 
 const NewDialog = withStyles({
   paper: {
-    margin: "20px"
+    margin: "20px",
+    padding: "10px"
   }
 })(Dialog);
 
@@ -78,6 +79,17 @@ export default function UpdatePasswordForm(props) {
     setmatchPass(event.target.value);
   };
 
+  const close = () => {
+    setcurPass("");
+    setError("");
+    seterrorCurPass(false);
+    seterrorMatchPass(false);
+    seterrorNewPass(false);
+    setmatchPass("");
+    setnewPass("");
+    onClose();
+  };
+
   const handleSubmit = () => {
     // Make either an axios update email or salary call
     let e = false;
@@ -97,7 +109,7 @@ export default function UpdatePasswordForm(props) {
       return null;
     }
     setLoading(true);
-    onClose();
+    close();
   };
 
   const form = loading ? (
@@ -147,13 +159,14 @@ export default function UpdatePasswordForm(props) {
         justify="center"
         alignContent="center"
         spacing={2}
+        style={{ width: "99%" }}
       >
         <Grid item>
           <Button
             variant="contained"
             color="primary"
             startIcon={<SaveAltIcon />}
-            onClick={handleSubmit}
+            type="submit"
           >
             Save
           </Button>
@@ -163,7 +176,7 @@ export default function UpdatePasswordForm(props) {
             variant="contained"
             color="secondary"
             startIcon={<ClearIcon />}
-            onClick={onClose}
+            onClick={close}
           >
             Cancel
           </Button>

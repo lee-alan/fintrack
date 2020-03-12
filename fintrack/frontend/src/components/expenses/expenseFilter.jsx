@@ -1,6 +1,5 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import clsx from "clsx";
 import ExpansionPanel from "@material-ui/core/ExpansionPanel";
 import ExpansionPanelDetails from "@material-ui/core/ExpansionPanelDetails";
 import ExpansionPanelSummary from "@material-ui/core/ExpansionPanelSummary";
@@ -10,10 +9,17 @@ import FilterListIcon from "@material-ui/icons/FilterList";
 import Button from "@material-ui/core/Button";
 import Divider from "@material-ui/core/Divider";
 import MomentUtils from "@date-io/moment";
+import Chip from "@material-ui/core/Chip";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
+import MenuItem from "@material-ui/core/MenuItem";
+import Input from "@material-ui/core/Input";
 import {
   MuiPickersUtilsProvider,
   KeyboardDatePicker
 } from "@material-ui/pickers";
+import { categories, util } from "../util";
 
 // Filter starter code is from:
 // https://material-ui.com/components/expansion-panels/
@@ -51,19 +57,60 @@ const useStyles = makeStyles(theme => ({
   dateClass: {
     display: "flex",
     flexDirection: "row"
+  },
+  categoryForm: {
+    minWidth: "150px"
   }
 }));
+
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: 48 * 4.5 + 8,
+      width: 250
+    }
+  }
+};
 
 export default function ExpenseFilter(props) {
   const { onSubmit, user } = props;
   const [open, setOpen] = React.useState(false);
-  const [startDate, setStartDate] = React.useState(new Date(0));
+  const [startDate, setStartDate] = React.useState(util.getFirstDayOfMonth);
   const [endDate, setEndDate] = React.useState(new Date());
+  const [categorySelected, setCategorySelected] = React.useState([]);
+  const [paymentSelected, setPaymentSelected] = React.useState([]);
+  const [type, setType] = React.useState("All");
   const classes = useStyles();
 
   const toggleForm = () => {
     setOpen(!open);
   };
+
+  const changeCategory = event => {
+    setCategorySelected(event.target.value);
+  };
+
+  const changePayment = event => {
+    setPaymentSelected(event.target.value);
+  };
+
+  const changeType = event => {
+    setType(event.target.value);
+  };
+
+  const filterExpenses = () => {};
+
+  /*
+  const deleteCatChip = chip => () => {
+    let i = categorySelected.findIndex(item => {
+      return item === chip;
+    });
+    if (i !== -1) {
+      let newList = categorySelected;
+      newList.splice(i, 1);
+      setCategorySelected(newList);
+    }
+  };*/
 
   return (
     <div className={classes.root}>
@@ -117,7 +164,77 @@ export default function ExpenseFilter(props) {
                 />
               </MuiPickersUtilsProvider>
             </div>
-            <div className={classes.flexRow}></div>
+            <div className={classes.flexRow}>
+              <FormControl className={classes.categoryForm}>
+                <InputLabel id="category_label">Category</InputLabel>
+                <Select
+                  labelId="category_label"
+                  id="select_cat"
+                  multiple
+                  value={categorySelected}
+                  onChange={changeCategory}
+                  input={<Input id="im_cat" />}
+                  renderValue={selected => (
+                    <div className={classes.chips}>
+                      {selected.map(value => (
+                        <Chip key={value} label={value} />
+                      ))}
+                    </div>
+                  )}
+                  MenuProps={MenuProps}
+                >
+                  {categories.map(name => (
+                    <MenuItem key={name} value={name}>
+                      {name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+            <div className={classes.flexRow}>
+              <FormControl className={classes.categoryForm}>
+                <InputLabel id="payment_label">Payment Type</InputLabel>
+                <Select
+                  labelId="payment_label"
+                  id="select_payment"
+                  multiple
+                  value={paymentSelected}
+                  onChange={changePayment}
+                  input={<Input id="in_pay" />}
+                  renderValue={selected => (
+                    <div className={classes.chips}>
+                      {selected.map(value => (
+                        <Chip
+                          key={value}
+                          label={value}
+                          className={classes.chip}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  MenuProps={MenuProps}
+                >
+                  <MenuItem value="credit">Credit</MenuItem>
+                  <MenuItem value="debit">Debit</MenuItem>
+                  <MenuItem value="cash">Cash</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
+            <div className={classes.flexRow}>
+              <FormControl className={classes.categoryForm}>
+                <InputLabel id="payment_label">Expense Type</InputLabel>
+                <Select
+                  labelId="payment_label"
+                  id="select_payment"
+                  value={type}
+                  onChange={changeType}
+                >
+                  <MenuItem value="all">All</MenuItem>
+                  <MenuItem value="expense">Expenses</MenuItem>
+                  <MenuItem value="income">Income</MenuItem>
+                </Select>
+              </FormControl>
+            </div>
           </div>
         </ExpansionPanelDetails>
         <Divider />
