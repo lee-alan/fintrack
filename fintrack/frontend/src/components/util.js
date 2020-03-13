@@ -73,6 +73,21 @@ class Util {
     let curDate = new Date();
     return new Date(curDate.getFullYear(), curDate.getMonth(), 1);
   }
+
+  formatDateAPI(date) {
+    console.log("Date", date);
+    let st = "";
+    if (date.getMonth() + 1 < 10) {
+      st = st.concat("0");
+    }
+    st = st.concat(date.getMonth() + 1, "/");
+    if (date.getDate() < 10) {
+      st = st.concat("0");
+    }
+    st = st.concat(date.getDate(), "/");
+
+    return st.concat(date.getFullYear());
+  }
 }
 
 export let util = new Util();

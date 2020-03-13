@@ -74,6 +74,36 @@ export default function ExpensePage(props) {
 
   const handleSearchQuery = query => {
     // Call backend and fill rows with relevant data
+    console.log(query);
+    setLoadRows(true);
+    axios
+      .get(
+        "/api/expense/multiple/".concat(
+          user,
+          "?page_number=",
+          currentPage,
+          "&page_limit=",
+          loadMax,
+          "&category=",
+          query.category,
+          "&payment_type=",
+          query.payment_type,
+          "&type=",
+          query.type,
+          "&start=",
+          query.start,
+          "&end=",
+          query.end
+        )
+      )
+      .then(res => {
+        console.log(res);
+        setRows(res.data.map(createData));
+        setLoadRows(false);
+      })
+      .catch(error => {
+        console.log("Error: ", error.response);
+      });
   };
 
   const addNewExpense = () => {

@@ -73,13 +73,13 @@ const MenuProps = {
 };
 
 export default function ExpenseFilter(props) {
-  const { onSubmit, user } = props;
+  const { onSubmit } = props;
   const [open, setOpen] = React.useState(false);
   const [startDate, setStartDate] = React.useState(util.getFirstDayOfMonth);
   const [endDate, setEndDate] = React.useState(new Date());
   const [categorySelected, setCategorySelected] = React.useState([]);
   const [paymentSelected, setPaymentSelected] = React.useState([]);
-  const [type, setType] = React.useState("All");
+  const [type, setType] = React.useState("all");
   const classes = useStyles();
 
   const toggleForm = () => {
@@ -98,7 +98,34 @@ export default function ExpenseFilter(props) {
     setType(event.target.value);
   };
 
-  const filterExpenses = () => {};
+  const filterExpenses = () => {
+    let cat = ".*";
+    if (categorySelected.length !== 0) {
+      cat = categorySelected[0];
+      for (let i = 1; i < categorySelected.length; i++) {
+        cat = cat.concat("|", categorySelected[i]);
+      }
+    }
+    let pat = ".*";
+    if (paymentSelected.length !== 0) {
+      pat = paymentSelected[0];
+      for (let i = 1; i < paymentSelected.length; i++) {
+        pat = pat.concat("|", paymentSelected[i]);
+      }
+    }
+    let t = ".*";
+    if (type !== "all") t = type;
+
+    let query = {
+      category: cat,
+      payment_type: pat,
+      start: util.formatDateAPI(startDate),
+      end: util.formatDateAPI(endDate),
+      type: t
+    };
+    toggleForm();
+    onSubmit(query);
+  };
 
   /*
   const deleteCatChip = chip => () => {
@@ -142,7 +169,7 @@ export default function ExpenseFilter(props) {
                   id="expense_date"
                   label="Start Date"
                   value={startDate}
-                  onChange={date => setStartDate(date)}
+                  onChange={date => setStartDate(new Date(date._d))}
                   className={classes.date}
                   KeyboardButtonProps={{
                     "aria-label": "change date"
@@ -156,7 +183,7 @@ export default function ExpenseFilter(props) {
                   id="expense_date"
                   label="End Date"
                   value={endDate}
-                  onChange={date => setEndDate(date)}
+                  onChange={date => setEndDate(new Date(date._d))}
                   className={classes.date}
                   KeyboardButtonProps={{
                     "aria-label": "change date"
@@ -240,7 +267,7 @@ export default function ExpenseFilter(props) {
         <Divider />
         <ExpansionPanelActions>
           <Button size="small">Clear</Button>
-          <Button size="small" color="primary">
+          <Button size="small" color="primary" onClick={filterExpenses}>
             Filter
           </Button>
         </ExpansionPanelActions>
