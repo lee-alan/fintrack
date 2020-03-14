@@ -85,6 +85,10 @@ router.get('/multiple/:username', applyValidationRules("get expenses"), validate
     start = new Date(start);
     start = start.setDate(start.getDate() - 1);
     start = new Date(start);
+    start = start.setHours(20,0,0);
+    start = new Date(start);
+    end = new Date(end);
+    end = end.setHours(19, 59, 59);
     end = new Date(end);
     console.log(start, end);
     const result = await get_expenses(page_number, page_limit, username, categories, payment_types, types, start, end);
@@ -106,6 +110,10 @@ router.get('/multiple-sum/:username', applyValidationRules("get expenses sum"), 
     start = new Date(start);
     start = start.setDate(start.getDate() - 1);
     start = new Date(start);
+    start = start.setHours(20,0,0);
+    start = new Date(start);
+    end = new Date(end);
+    end = end.setHours(19, 59, 59);
     end = new Date(end);
     console.log(start, end);
     const result = await get_expenses_sum(page_number, page_limit, username, categories, payment_types, types, start, end);
