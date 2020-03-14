@@ -181,7 +181,6 @@ export default function AddExpenseDialog(props) {
       err = true;
     }
     if (err) return null;
-    console.log(util.formatDateAPI(selectedDate));
     let d = {
       date: selectedDate
         ? util.formatDateAPI(selectedDate)

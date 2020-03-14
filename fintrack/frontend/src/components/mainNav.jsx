@@ -137,7 +137,6 @@ class NavigationBar extends Component {
     this.setState({ anchorEl: null });
   };
   handleProfile() {
-    console.log("profile");
     window.location.href = "/profile";
   }
 

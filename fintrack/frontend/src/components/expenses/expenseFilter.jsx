@@ -99,22 +99,24 @@ export default function ExpenseFilter(props) {
   };
 
   const filterExpenses = () => {
-    let cat = ".*";
+    let cat = "[";
     if (categorySelected.length !== 0) {
-      cat = categorySelected[0];
+      cat = cat.concat('"', categorySelected[0], '"');
       for (let i = 1; i < categorySelected.length; i++) {
-        cat = cat.concat("|", categorySelected[i]);
+        cat = cat.concat(',"', categorySelected[i], '"');
       }
     }
-    let pat = ".*";
+    cat = cat.concat("]");
+    let pat = "[";
     if (paymentSelected.length !== 0) {
-      pat = paymentSelected[0];
+      pat = pat.concat('"', paymentSelected[0], '"');
       for (let i = 1; i < paymentSelected.length; i++) {
-        pat = pat.concat("|", paymentSelected[i]);
+        pat = pat.concat(',"', paymentSelected[i], '"');
       }
     }
-    let t = ".*";
-    if (type !== "all") t = type;
+    pat = pat.concat("]");
+    let t = "[]";
+    if (type !== "all") t = "[".concat('"', type, '"]');
 
     let query = {
       category: cat,
@@ -166,7 +168,7 @@ export default function ExpenseFilter(props) {
                   variant="inline"
                   format="MM/DD/YYYY"
                   margin="normal"
-                  id="expense_date"
+                  id="expense_start_date"
                   label="Start Date"
                   value={startDate}
                   onChange={date => setStartDate(new Date(date._d))}
@@ -180,7 +182,7 @@ export default function ExpenseFilter(props) {
                   variant="inline"
                   format="MM/DD/YYYY"
                   margin="normal"
-                  id="expense_date"
+                  id="expense_end_date"
                   label="End Date"
                   value={endDate}
                   onChange={date => setEndDate(new Date(date._d))}

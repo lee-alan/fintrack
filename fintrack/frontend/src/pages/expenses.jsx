@@ -8,7 +8,6 @@ import AddExpenseDialog from "../components/expenses/addExpense";
 import ExpenseFilter from "../components/expenses/expenseFilter";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import axios from "axios";
-import Loading from "../components/utilities/loading";
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -50,7 +49,7 @@ export default function ExpensePage(props) {
       currentPage,
       "&page_limit=",
       loadMax,
-      "&payment_type=.*&category=.*&type=.*"
+      "&payment_types=[]&categories=[]&types=[]"
     )
   );
 
@@ -62,7 +61,6 @@ export default function ExpensePage(props) {
         .then(response => {
           setRows(response.data.map(createData));
           setLoadRows(false);
-          //console.log(rows);
         })
         .catch(error => {
           console.log("Error: ", error.response);
@@ -84,11 +82,11 @@ export default function ExpensePage(props) {
         currentPage,
         "&page_limit=",
         loadMax,
-        "&category=",
+        "&categories=",
         query.category,
-        "&payment_type=",
+        "&payment_types=",
         query.payment_type,
-        "&type=",
+        "&types=",
         query.type,
         "&start=",
         query.start,

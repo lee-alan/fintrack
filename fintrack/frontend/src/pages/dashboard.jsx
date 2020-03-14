@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import "../style/main.css";
 import "../style/dashboard.css";
 import ExpenseDash from "../components/dashboard/expenseOverview";

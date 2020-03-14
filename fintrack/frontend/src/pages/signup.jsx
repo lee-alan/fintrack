@@ -69,15 +69,13 @@ class SignupPage extends Component {
         password: this.state.password
       })
       .then(response => {
-        console.log("response.");
         if (response.status === 200) {
           this.setState({ loading: false });
           document.location.href = "/";
         }
       })
       .catch(error => {
-        console.log("error");
-        console.log(error);
+        console.log(error.response);
         this.setState({
           error: error.response.data.error
         });

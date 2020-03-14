@@ -87,7 +87,7 @@ export default function ExpenseDash(props) {
                 user,
                 "/",
                 new Date().getMonth() + 1,
-                "?page_number=1&page_limit=1000&payment_type=.*&type=income&category=.*"
+                '?page_number=1&page_limit=1000&payment_types=[]&types=["income"]&categories=[]'
               )
             )
             .then(resIn => {
@@ -110,8 +110,9 @@ export default function ExpenseDash(props) {
               user,
               "/",
               new Date().getMonth() + 1,
-              "?page_number=1&page_limit=1000&payment_type=.*&type=.*&category=",
-              categories[i].toLowerCase()
+              '?page_number=1&page_limit=1000&payment_types=[]&types=[]&categories=["',
+              categories[i].toLowerCase(),
+              '"]'
             )
           );
           exSum += res.data.sum;
@@ -126,7 +127,7 @@ export default function ExpenseDash(props) {
       setCategoryText(exData.map(util.formatToDollars));
       setLoading(false);
     })();
-  }, []);
+  }, [user]);
 
   return (
     <div className={classes.paperClass}>
