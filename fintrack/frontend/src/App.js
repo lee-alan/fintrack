@@ -80,7 +80,6 @@ class App extends Component {
       </Switch>
     );
     if (this.state.isauth) {
-      console.log("Is auth");
       switchRule = (
         <Switch>
           <Route path="/dashboard">

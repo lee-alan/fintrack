@@ -8,6 +8,7 @@ import AddExpenseDialog from "../components/expenses/addExpense";
 import ExpenseFilter from "../components/expenses/expenseFilter";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import axios from "axios";
+import Loading from "../components/utilities/loading";
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -36,27 +37,28 @@ function createData(data) {
 }
 
 export default function ExpensePage(props) {
+  const loadMax = 101;
+  let currentPage = 1;
   const { user } = props;
   const [open, setOpen] = React.useState(false);
   const [loadRows, setLoadRows] = React.useState(true);
   const [rows, setRows] = React.useState([]);
-  const loadMax = 101;
-  let currentPage = 1;
+  const [currentQuery, setCurrentQuery] = React.useState(
+    "/api/expense/multiple/".concat(
+      user,
+      "?page_number=",
+      currentPage,
+      "&page_limit=",
+      loadMax,
+      "&payment_type=.*&category=.*&type=.*"
+    )
+  );
 
   React.useEffect(() => {
     if (loadRows) {
       // Query database and load new
       axios
-        .get(
-          "/api/expense/multiple/".concat(
-            user,
-            "?page_number=",
-            currentPage,
-            "&page_limit=",
-            loadMax,
-            "&payment_type=.*&category=.*&type=.*"
-          )
-        )
+        .get(currentQuery)
         .then(response => {
           setRows(response.data.map(createData));
           setLoadRows(false);
@@ -66,7 +68,7 @@ export default function ExpensePage(props) {
           console.log("Error: ", error.response);
         });
     }
-  }, [loadRows, user, currentPage]);
+  }, [loadRows, user, currentPage, currentQuery]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -74,36 +76,26 @@ export default function ExpensePage(props) {
 
   const handleSearchQuery = query => {
     // Call backend and fill rows with relevant data
-    console.log(query);
     setLoadRows(true);
-    axios
-      .get(
-        "/api/expense/multiple/".concat(
-          user,
-          "?page_number=",
-          currentPage,
-          "&page_limit=",
-          loadMax,
-          "&category=",
-          query.category,
-          "&payment_type=",
-          query.payment_type,
-          "&type=",
-          query.type,
-          "&start=",
-          query.start,
-          "&end=",
-          query.end
-        )
+    setCurrentQuery(
+      "/api/expense/multiple/".concat(
+        user,
+        "?page_number=",
+        currentPage,
+        "&page_limit=",
+        loadMax,
+        "&category=",
+        query.category,
+        "&payment_type=",
+        query.payment_type,
+        "&type=",
+        query.type,
+        "&start=",
+        query.start,
+        "&end=",
+        query.end
       )
-      .then(res => {
-        console.log(res);
-        setRows(res.data.map(createData));
-        setLoadRows(false);
-      })
-      .catch(error => {
-        console.log("Error: ", error.response);
-      });
+    );
   };
 
   const addNewExpense = () => {

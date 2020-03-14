@@ -57,7 +57,7 @@ export default function TableNavigator(props) {
   };
 
   const goNextPage = event => {
-    if (page !== maxPage) {
+    if (page < maxPage) {
       onChangePage(event, page + 1);
     }
   };
@@ -94,7 +94,7 @@ export default function TableNavigator(props) {
       <IconButton
         aria-label="next"
         className={classes.nextPage}
-        disabled={page === maxPage}
+        disabled={page >= maxPage}
         size="small"
         onClick={goNextPage}
       >

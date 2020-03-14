@@ -75,7 +75,6 @@ class Util {
   }
 
   formatDateAPI(date) {
-    console.log("Date", date);
     let st = "";
     if (date.getMonth() + 1 < 10) {
       st = st.concat("0");

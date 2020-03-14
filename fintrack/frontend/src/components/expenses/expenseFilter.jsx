@@ -211,7 +211,7 @@ export default function ExpenseFilter(props) {
                   MenuProps={MenuProps}
                 >
                   {categories.map(name => (
-                    <MenuItem key={name} value={name}>
+                    <MenuItem key={name} value={name.toLowerCase()}>
                       {name}
                     </MenuItem>
                   ))}
@@ -249,10 +249,10 @@ export default function ExpenseFilter(props) {
             </div>
             <div className={classes.flexRow}>
               <FormControl className={classes.categoryForm}>
-                <InputLabel id="payment_label">Expense Type</InputLabel>
+                <InputLabel id="ex_label">Expense Type</InputLabel>
                 <Select
-                  labelId="payment_label"
-                  id="select_payment"
+                  labelId="ex_label"
+                  id="select_expayment"
                   value={type}
                   onChange={changeType}
                 >
