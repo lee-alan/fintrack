@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { util } from "../util";
+import { util, categories } from "../util";
 import PropTypes from "prop-types";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Tooltip from "@material-ui/core/Tooltip";
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import axios from "axios";
 
 const Plot = createPlotlyComponent(Plotly);
 
@@ -52,6 +54,13 @@ const styles = makeStyles(theme => ({
   },
   graphCol: {
     flex: 2
+  },
+  loading: {
+    width: "100%",
+    height: "100%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center"
   }
 }));
 
@@ -60,71 +69,116 @@ export default function ExpenseDash(props) {
   const [expenseSum, setExpenseSum] = useState(0);
   const [incomeSum, setIncomeSum] = useState(0);
   const [month, setMonth] = React.useState("");
-  const [categoryLabel, setCategoryLabel] = React.useState([]);
   const [categoryValue, setCategoryValue] = React.useState([]);
   const [categoryText, setCategoryText] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
   const classes = styles();
 
   useEffect(() => {
-    // TODO: axios to fetch this data and setData
-    setExpenseSum(1283.3);
-    setIncomeSum(1490.78);
-    setMonth(util.getCurrentMonth());
-    setCategoryLabel([
-      "Home",
-      "Food",
-      "Entertainment",
-      "Travel",
-      "Miscellaneous"
-    ]);
-    setCategoryValue([72.1, 54.3, 0, 91.3, 14]);
-    setCategoryText([72.1, 54.3, 0, 91.3, 14].map(util.formatToDollars));
-  }, []);
+    setLoading(true);
+
+    (async function getData() {
+      axios
+        .get("/api/user/info/".concat(user))
+        .then(response => {
+          axios
+            .get(
+              "/api/expense/multiple-sum/".concat(
+                user,
+                "/",
+                new Date().getMonth() + 1,
+                '?page_number=1&page_limit=1000&payment_types=[]&types=["income"]&categories=[]'
+              )
+            )
+            .then(resIn => {
+              setIncomeSum(response.data.salary + resIn.data.sum);
+            })
+            .catch(err => {
+              console.log(err.response);
+            });
+        })
+        .catch(err => {
+          console.log(err.response);
+        });
+      // TODO: axios to fetch this data and setData
+      let exData = [];
+      let exSum = 0;
+      for (let i = 0; i < categories.length; i++) {
+        try {
+          let res = await axios.get(
+            "/api/expense/multiple-sum/".concat(
+              user,
+              "/",
+              new Date().getMonth() + 1,
+              '?page_number=1&page_limit=1000&payment_types=[]&types=[]&categories=["',
+              categories[i].toLowerCase(),
+              '"]'
+            )
+          );
+          exSum += res.data.sum;
+          exData.push(res.data.sum);
+        } catch (err) {
+          console.log(err.response);
+        }
+      }
+      setExpenseSum(exSum);
+      setMonth(util.getCurrentMonth());
+      setCategoryValue(exData);
+      setCategoryText(exData.map(util.formatToDollars));
+      setLoading(false);
+    })();
+  }, [user]);
 
   return (
     <div className={classes.paperClass}>
-      <div className={classes.mainFrame}>
-        <div className={classes.sumCol}>
-          <Title>Expenses: {month}</Title>
-
-          <Tooltip title="Expenses" placement="left">
-            <div className={classes.expenseText}>
-              {util.formatToDollars(expenseSum)}
-            </div>
-          </Tooltip>
-          <Tooltip title="Income" placement="left">
-            <div className={classes.incomeText}>
-              {util.formatToDollars(incomeSum)}
-            </div>
-          </Tooltip>
-          <Tooltip title="Net Margin" placement="left">
-            <div className={classes.netIncomeText}>
-              {incomeSum >= expenseSum ? "+" : "-"}
-              {util.formatToDollars(Math.abs(incomeSum - expenseSum))}
-            </div>
-          </Tooltip>
+      {loading ? (
+        <div className={classes.loading}>
+          <CircularProgress />
         </div>
-        {expanded ? (
-          <div className={classes.graphCol}>
-            <Plot
-              data={[
-                {
-                  type: "pie",
-                  values: categoryValue,
-                  labels: categoryLabel,
-                  text: categoryText,
-                  textinfo: "label",
-                  hoverinfo: "none",
-                  hovertemplate: "<extra></extra>%{label} <br>Amount: %{text}"
-                }
-              ]}
-              style={{ width: "100%", height: "100%" }}
-            ></Plot>
+      ) : (
+        <div className={classes.mainFrame}>
+          <div className={classes.sumCol}>
+            <Title>Expenses: {month}</Title>
+
+            <Tooltip title="Expenses" placement="left">
+              <div className={classes.expenseText}>
+                {util.formatToDollars(expenseSum)}
+              </div>
+            </Tooltip>
+            <Tooltip title="Income" placement="left">
+              <div className={classes.incomeText}>
+                {util.formatToDollars(incomeSum)}
+              </div>
+            </Tooltip>
+            <Tooltip title="Net Margin" placement="left">
+              <div className={classes.netIncomeText}>
+                {incomeSum >= expenseSum ? "+" : "-"}
+                {util.formatToDollars(Math.abs(incomeSum - expenseSum))}
+              </div>
+            </Tooltip>
           </div>
-        ) : (
-          ""
-        )}
-      </div>
+          {expanded ? (
+            <div className={classes.graphCol}>
+              <Plot
+                data={[
+                  {
+                    type: "pie",
+                    values: categoryValue,
+                    labels: categories,
+                    text: categoryText,
+                    textinfo: "label",
+                    hoverinfo: "none",
+                    hovertemplate: "<extra></extra>%{label} <br>Amount: %{text}"
+                  }
+                ]}
+                style={{ width: "100%", height: "100%" }}
+              ></Plot>
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
+      )}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
 import clsx from "clsx";
+import axios from "axios";
 
 const NewDialog = withStyles({ paper: { padding: "10px" } })(Dialog);
 
@@ -48,7 +49,7 @@ export default function UpdateProfileForm(props) {
    * props.user: current user
    * props.field: field to update
    */
-  const { onClose, open } = props;
+  const { onClose, open, field, user, prevVal } = props;
   const [newField, setNewField] = React.useState("");
   const [loading, setLoading] = React.useState(false);
   const [errorField, setErrorField] = React.useState(false);
@@ -63,7 +64,7 @@ export default function UpdateProfileForm(props) {
 
   const close = () => {
     setNewField("");
-    setErrorField("");
+    setErrorField(false);
     setError("");
     onClose();
   };
@@ -75,7 +76,23 @@ export default function UpdateProfileForm(props) {
       return null;
     }
     setLoading(true);
-    close();
+    let d = {
+      username: user
+    };
+    d[field] = newField;
+    axios
+      .patch("/api/user/profile/".concat(field), d)
+      .then(res => {
+        if (res.status === 200) {
+          setLoading(false);
+          close();
+        }
+      })
+      .catch(err => {
+        console.log("Error", err.response);
+        setError(err.response.data.error);
+        setLoading(false);
+      });
   };
 
   const form = loading ? (
@@ -85,9 +102,9 @@ export default function UpdateProfileForm(props) {
   ) : (
     <form className={classes.root} onSubmit={handleSubmit}>
       <div className={clsx(classes.prev, classes.rootItem)}>
-        Current {props.field}:{" "}
-        {props.prevVal ? (
-          <div className={classes.prev_val}>{props.prevVal}</div>
+        Current {field}:{" "}
+        {prevVal ? (
+          <div className={classes.prev_val}>{prevVal}</div>
         ) : (
           <div className={classes.prev_non}>No Value</div>
         )}
@@ -95,7 +112,7 @@ export default function UpdateProfileForm(props) {
       <TextField
         error={errorField}
         id="newVal"
-        label={"New ".concat(props.field)}
+        label={"New ".concat(field)}
         variant="outlined"
         value={newField}
         onChange={handleChange}
@@ -145,7 +162,7 @@ export default function UpdateProfileForm(props) {
       open={open}
     >
       <Typography component="h1" variant="h4" color="primary" gutterBottom>
-        Update {props.field}
+        Update {field}
       </Typography>
       {form}
 

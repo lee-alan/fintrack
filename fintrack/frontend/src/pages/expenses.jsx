@@ -36,37 +36,37 @@ function createData(data) {
 }
 
 export default function ExpensePage(props) {
+  const loadMax = 101;
+  let currentPage = 1;
   const { user } = props;
   const [open, setOpen] = React.useState(false);
   const [loadRows, setLoadRows] = React.useState(true);
   const [rows, setRows] = React.useState([]);
-  const loadMax = 101;
-  let currentPage = 1;
+  const [currentQuery, setCurrentQuery] = React.useState(
+    "/api/expense/multiple/".concat(
+      user,
+      "?page_number=",
+      currentPage,
+      "&page_limit=",
+      loadMax,
+      "&payment_types=[]&categories=[]&types=[]"
+    )
+  );
 
   React.useEffect(() => {
     if (loadRows) {
       // Query database and load new
       axios
-        .get(
-          "/api/expense/multiple/".concat(
-            user,
-            "?page_number=",
-            currentPage,
-            "&page_limit=",
-            loadMax,
-            "&payment_type=.*&category=.*&type=.*"
-          )
-        )
+        .get(currentQuery)
         .then(response => {
           setRows(response.data.map(createData));
           setLoadRows(false);
-          //console.log(rows);
         })
         .catch(error => {
           console.log("Error: ", error.response);
         });
     }
-  }, [loadRows, user, currentPage]);
+  }, [loadRows, user, currentPage, currentQuery]);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -74,6 +74,26 @@ export default function ExpensePage(props) {
 
   const handleSearchQuery = query => {
     // Call backend and fill rows with relevant data
+    setLoadRows(true);
+    setCurrentQuery(
+      "/api/expense/multiple/".concat(
+        user,
+        "?page_number=",
+        currentPage,
+        "&page_limit=",
+        loadMax,
+        "&categories=",
+        query.category,
+        "&payment_types=",
+        query.payment_type,
+        "&types=",
+        query.type,
+        "&start=",
+        query.start,
+        "&end=",
+        query.end
+      )
+    );
   };
 
   const addNewExpense = () => {

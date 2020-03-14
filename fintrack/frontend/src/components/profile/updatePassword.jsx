@@ -10,6 +10,7 @@ import FormHelperText from "@material-ui/core/FormHelperText";
 import Box from "@material-ui/core/Box";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Typography from "@material-ui/core/Typography";
+import axios from "axios";
 
 const NewDialog = withStyles({
   paper: {
@@ -52,7 +53,7 @@ export default function UpdatePasswordForm(props) {
    * props.user: current user
    * props.field: field to update
    */
-  const { onClose, open } = props;
+  const { onClose, open, user } = props;
   const [curPass, setcurPass] = React.useState("");
   const [newPass, setnewPass] = React.useState("");
   const [matchPass, setmatchPass] = React.useState("");
@@ -109,7 +110,23 @@ export default function UpdatePasswordForm(props) {
       return null;
     }
     setLoading(true);
-    close();
+    axios
+      .patch("/api/user/profile/password", {
+        username: user,
+        old_password: curPass,
+        new_password: newPass
+      })
+      .then(res => {
+        if (res.status === 200) {
+          setLoading(false);
+          close();
+        }
+      })
+      .catch(err => {
+        console.log(err.response);
+        setLoading(false);
+        setError(err.response.data.error);
+      });
   };
 
   const form = loading ? (
@@ -124,6 +141,7 @@ export default function UpdatePasswordForm(props) {
         label="Old Password"
         variant="outlined"
         value={curPass}
+        type="password"
         onChange={handleChangeCurPass}
         className={classes.rootItem}
       />
@@ -134,6 +152,7 @@ export default function UpdatePasswordForm(props) {
         label="New Password"
         variant="outlined"
         value={newPass}
+        type="password"
         onChange={handleChangeNewPass}
         className={classes.rootItem}
       />
@@ -144,6 +163,7 @@ export default function UpdatePasswordForm(props) {
         label="Confirm Password"
         variant="outlined"
         value={matchPass}
+        type="password"
         onChange={handleChangeMatchPass}
         className={classes.rootItem}
       />

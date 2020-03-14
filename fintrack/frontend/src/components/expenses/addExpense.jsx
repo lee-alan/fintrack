@@ -128,7 +128,7 @@ export default function AddExpenseDialog(props) {
   };
 
   const handleDateChange = date => {
-    setSelectedDate(date);
+    setSelectedDate(new Date(date._d));
   };
 
   const handleChangeAmt = event => {
@@ -181,8 +181,10 @@ export default function AddExpenseDialog(props) {
       err = true;
     }
     if (err) return null;
-
     let d = {
+      date: selectedDate
+        ? util.formatDateAPI(selectedDate)
+        : util.formatDateAPI(new Date()),
       username: props.user,
       category: category.toLowerCase(),
       payment_type: payment_type.toLowerCase(),
