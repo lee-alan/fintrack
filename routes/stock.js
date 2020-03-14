@@ -45,10 +45,29 @@ app.use(function (req, res, next){
 });
 */
 
+// fetch qty : dictionary of {ticker: qty}
+app.get("/getQty/:username/", function (req, res) {
+    let username = req.params.username;
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+    
+    client.connect(function(err) {
+		if (err) return res.status(500).end(err);
+		
+		const db = client.db("fintrack");
+		db.collection("users").find({username: username }, {projection: {_id:0, qty:1} }).toArray(function (err, result) {
+            if (err) return res.status(500).end(err);
+            if (!result) return res.json("no tickers");
+            console.log(result);
+            client.close();
+			return res.json(result);
+		});
+	});
+   
+});
+
 // fetch all ticker symbols for given user
 app.get("/getTickers/:username/", function (req, res) {
     let username = req.params.username;
-    console.log(username);
     const client = new MongoClient(uri, { useNewUrlParser: true });
     
     client.connect(function(err) {
@@ -77,9 +96,9 @@ app.get("/daily/:ticker/", function (req, res) {
 // fetch batch time_series_daily data for given ticker symbols "a,b,c"
 app.get("/daily/batch/:tickers/", function (req, res) {
     let tickers = req.params.tickers;
-    console.log(tickers);
+    console.log("user tickers:", tickers);
 	axios.get('https://api.worldtradingdata.com/api/v1/stock?symbol=' + tickers + '&api_token=' + WTD_API_KEY).then(response => {
-		console.log(response.data);
+		//console.log(response.data);
 		return res.json(response.data);
     });
 });
@@ -97,6 +116,27 @@ app.post("/addticker/:username/:ticker/", function (req, res) {
         db.collection("users").update({username: username}, {$addToSet: {tickers: ticker} }, function(err, response) {
             if (err) return res.status(500).end(err);
             console.log("1 ticker added");
+            client.close();
+            return res.json(response);
+        });
+    }); 
+});
+
+// add ticker qty for a user
+app.post("/addqty/:username/:ticker/:qty", function (req, res) {
+    let username = req.params.username;
+    let add = {};
+    add[req.params.ticker] = req.params.qty;
+
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+
+    client.connect(function(err) {
+        if (err) return res.status(500).end(err);
+        
+        const db = client.db("fintrack");
+        db.collection("users").update({username: username}, {$push: {"qty" : add }}, function(err, response) {
+            if (err) return res.status(500).end(err);
+            console.log("ticker quantity added");
             client.close();
             return res.json(response);
         });
