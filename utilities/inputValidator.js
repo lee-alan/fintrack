@@ -53,8 +53,6 @@ exports.applyValidationRules = (endpoint) => {
         case "get expenses": {
             return [
                 check('username').isLength({min: 5}).withMessage("Invalid username"),
-                check('payment_type').isIn(["cash", "credit", "debit", ".*"]).withMessage("Te payment type should be cash, credit, debit or .*"),
-                check('type').isIn(["income", "expense", ".*"]).withMessage("The type of the expense should be either income or expense or .*"),
                 check('start').matches(/^((0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])[- /.](19|20)?[0-9]{2})*$/).withMessage("Invalid Date. Please follow this structure: mm/dd/yyyy."),
                 check('end').matches(/^((0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])[- /.](19|20)?[0-9]{2})*$/).withMessage("Invalid Date. Please follow this structure: mm/dd/yyyy.")
             ]
@@ -62,8 +60,6 @@ exports.applyValidationRules = (endpoint) => {
         case "get expenses sum": {
             return [
                 check('username').isLength({min: 5}).withMessage("Invalid username"),
-                check('payment_type').isIn(["cash", "credit", "debit", ".*"]).withMessage("Te payment type should be cash, credit, debit or .*"),
-                check('type').isIn(["income", "expense", ".*"]).withMessage("The type of the expense should be either income or expense or .*"),
                 check('start').matches(/^((0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])[- /.](19|20)?[0-9]{2})*$/).withMessage("Invalid Date. Please follow this structure: mm/dd/yyyy."),
                 check('end').matches(/^((0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])[- /.](19|20)?[0-9]{2})*$/).withMessage("Invalid Date. Please follow this structure: mm/dd/yyyy.")
             ]
@@ -73,18 +69,14 @@ exports.applyValidationRules = (endpoint) => {
             return [
                 check('month').isIn([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).withMessage("Invalid month. Month can be from 1-12"),
                 check('username').isLength({min: 5}).withMessage("Invalid username"),
-                check('payment_type').isIn(["cash", "credit", "debit", ".*"]).withMessage("Te payment type should be cash, credit, debit or .*"),
-                check('type').isIn(["income", "expense", ".*"]).withMessage("The type of the expense should be either income or expense or .*"),
-            ]
+               ]
         }
 
         case "get expenses sum by month": {
             return [
                 check('month').isIn([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]).withMessage("Invalid month. Month can be from 1-12"),
                 check('username').isLength({min: 5}).withMessage("Invalid username"),
-                check('payment_type').isIn(["cash", "credit", "debit", ".*"]).withMessage("Te payment type should be cash, credit, debit or .*"),
-                check('type').isIn(["income", "expense", ".*"]).withMessage("The type of the expense should be either income or expense or .*"),
-            ]
+                ]
         }
     }
 };

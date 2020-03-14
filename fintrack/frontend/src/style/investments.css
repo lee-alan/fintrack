@@ -1,10 +1,11 @@
-
-/*
-body {
-    background: #f1f1f1;
-    padding:48px;
+/*div#ticker_component {
+    text-align: center;
 }
 */
+input.search_ticker {
+    text-align: center;
+    width: 70%;
+}
 
 div.ticker_container {
     background:white;
@@ -12,6 +13,11 @@ div.ticker_container {
     width: 70%;
     margin: 5px auto 4px auto;
     padding: 1em;
+}
+
+.SearchTicker {
+    display: flex;
+    justify-content: center;
 }
 
 span.right {

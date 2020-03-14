@@ -5,20 +5,16 @@ class SearchTicker extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          ticker: ""
+          ticker: "",
+          qty: "",
         };
     }
-    /*
-    handlerChange(event) {
-       this.setState({
-            ticker: event.target.value
-       });
-    }   
-    */
+    
     handlerFormSubmit(event) {
         event.preventDefault();
-        this.props.onSearch(this.state.ticker); // do search
+        this.props.onSearch(this.state.ticker, this.state.qty); // do search
         this.setState({ticker: ""}); // reset
+        this.setState({qty: ""}); // reset
     }
 
     render() {
@@ -32,6 +28,14 @@ class SearchTicker extends Component {
                 onChange={event => this.setState({ticker: event.target.value})}
                 placeholder='Enter ticker'
             />
+            <input
+                name='qty'
+                type='text'
+                className='search_ticker'
+                value={this.state.qty}
+                onChange={event => this.setState({qty: event.target.value})}
+                placeholder='qty'
+            />
             <span className="search_btn">
                 <button type='submit' className='btn_search'>+</button>
             </span>
@@ -39,5 +43,5 @@ class SearchTicker extends Component {
         );
     }
 }
- 
+
 export default SearchTicker;
