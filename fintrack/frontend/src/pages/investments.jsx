@@ -7,8 +7,7 @@ import '../style/investments.css';
 import axios from "axios";
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
-import { connect } from "mongodb";
-
+import NumberFormat from 'react-number-format';
 
 const Plot = createPlotlyComponent(Plotly);
 
@@ -17,6 +16,7 @@ class InvestmentsPage extends Component {
     super(props);
     this.state = {
       user_tickers: [],
+      ticker_qty: {'': ''},
       user_tickers_data: {'data': []}, // from wtd api
       chart_x_val: [],
       chart_y_val: [],
@@ -24,16 +24,19 @@ class InvestmentsPage extends Component {
       adding_ticker: false
     };
   }
-  
+  /*
+  dictionary of tickers and quantities : {AAPL : 5 , TSLA : 5, ...}
+  */
   /* TODO
     // beta
     => display first ticker chart ---- _/
     => display list of tickers and data ---- _/
-    => add & remove tickers ---- o
+    => add & remove tickers ---- _/
     => display chart for specific ticker ---- o
     // final
+    => add validation to fields and duplicate tickers
     => auto update tickers ---- o
-    => implement caching of charts ---- o
+    => custom currency ---- o
     => add machine learning model to offer prediction ---- o
   */
 
@@ -43,7 +46,6 @@ class InvestmentsPage extends Component {
   
   getTicker() {
     try {
-      // update later to be for any general username
       axios.get('/api/investments/getTickers/' + this.props.user + '/').then(response => {
         
         if (response !== "no tickers") {
@@ -64,17 +66,34 @@ class InvestmentsPage extends Component {
     }
   }
   
+  getQty() {
+    try {
+      axios.get('/api/investments/getQty/' + this.props.user + '/').then(response => {
+        
+        if (response !== "no tickers") {
+          const This = this;
+         
+          This.setState({
+            ticker_qty: response.data[0].qty // {ticker: "qty"}
+          });
+        }
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   getChartingDataBatch() {
     const This = this;
     let tickers = this.state.user_tickers.join(',');
-    console.log(tickers);
+    //console.log(tickers);
     axios.get('/api/investments/daily/batch/' + tickers + '/').then(response => {
       let data = response.data;
       
       This.setState({
         user_tickers_data: data // list of dictionaries
       });
-      console.log(this.state.user_tickers_data.data);
+      //console.log(this.state.user_tickers_data.data);
     })
   }
 
@@ -103,17 +122,28 @@ class InvestmentsPage extends Component {
     }
   }
   
-  addTicker(ticker) {
+  addTicker(ticker, qty) {
     const This = this;
 
     try { // /addticker/:username/:ticker/
       This.setState({
         adding_ticker: true,
       });
+      // add ticker to user database
       axios.post('/api/investments/addticker/' + this.props.user + '/' + ticker + '/').then(response => {
+        // add ticker to ticker list
         let usertickers = this.state.user_tickers.slice();
         usertickers.push(ticker);
-        console.log(ticker);
+        // add ticker and qty to qty list
+        axios.post('/api/investments/addqty/' + this.props.user + '/' + ticker + '/' + qty + '/').then(response => {
+          let tickerqty = {...this.state.ticker_qty}; // make a copy of the qty state dictionary
+          tickerqty[ticker] = qty; // add new ticker and qty
+          This.setState({
+            ticker_qty: tickerqty,
+          });
+          console.log(this.state.ticker_qty); 
+        });
+
         This.setState({
           user_tickers: usertickers
         });
@@ -130,15 +160,11 @@ class InvestmentsPage extends Component {
     }
   }
 
-  handleSearch(ticker) {
+  handleSearch(ticker, qty) {
     let t = ticker.toUpperCase();
-    
+    // validate qty
     // validate ticker
-    // add ticker to user database
-    this.addTicker(t);
-    // update state
-    // get ticker data
-    //this.getChartingDataBatch(ticker);
+    this.addTicker(t, qty);
   }
 
   render() {
@@ -167,14 +193,14 @@ class InvestmentsPage extends Component {
           {this.state.user_tickers_data.data.map((dict) => 
             <div id={"ticker_container_" + dict.symbol} className="ticker_container" key={dict.symbol}>
               <span className="left">{dict.symbol}</span>
-              <span className="right">{dict.price}</span>
+              <span className="qty">{this.state.ticker_qty[dict.symbol]}</span> 
+              <span className="right"><NumberFormat value={dict.price} displayType={'text'} prefix={'$'} thousandSeparator={true} decimalprecision={2}/></span>
             </div>
           )}
-
         </div>
       </div>
     );
   }
 }
- 
+
 export default InvestmentsPage;
