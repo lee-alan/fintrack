@@ -141,9 +141,9 @@ All the below api require a session from the above login api
   - query parameters:
     - page_number: (int) page number (starts with 1)
     - page limit: (int) page limit
-    - type
-    - category: (string)[optional] Get expenses that are of this category (if this is null ignore)
-    - payment_type: (string)[optional] Get expenses that of of this type (if null ignore)
+    - categories: An array. input [] if you want all categories.
+    - payment_types: An array. input [] if you want all payment_types.
+    - types: An array. input [] if you want all types.
     - start: mm/dd/yyyy
     - end: mm/dd/yyyy
 - response: 200
@@ -161,9 +161,8 @@ All the below api require a session from the above login api
     
     ```
     $ curl -b cookie.txt -X GET
-           localhost:5000/api/expense/multiple/ram11?page_number=1&page_limit=10&payment_type=cash&type=expense&category=.*&start=01/01/2000&end=03/12/2001
+        localhost:5000/api/expense/multiple/ram11/3?page_number=1&page_limit=10&payment_types=["cash", "debit"]&types=["expense"]&categories=[]&start=01/01/2020&end=03/18/2020
     ```
-
 ---
 
 - description: retrieve the expenses from page\*limit to page\*limit +1 in the month, month
@@ -172,9 +171,9 @@ All the below api require a session from the above login api
   - query parameters:
     - page_number: (int) page number (starts with 1)
     - page_limit: (int) page limit
-    - category: (string)[optional] Get expenses that are of this category (=.* to match everything)
-    - payment_type: (string)[optional] Get expenses that of of this type (=.* to match everything)
-    - type
+    - categories: An array. input [] if you want all categories.
+    - payment_types: An array. input [] if you want all payment_types.
+    - types: An array. input [] if you want all types.
 - response: 200
   - content-type: `application/json`
   - body: list
@@ -188,7 +187,7 @@ All the below api require a session from the above login api
 
 ```
 $ curl -b cookie.txt -X GET
-       http://localhost:3003/api/expense/multiple/3?page_number=1&page_limit=2
+       localhost:5000/api/expense/multiple/ram11/3?page_number=1&page_limit=10&payment_types=["cash", "debit"]&types=["expense"]&categories=[]
 ```
 
 - description: retrieve the expenses from page\*limit to page\*limit +1 in the month, month
