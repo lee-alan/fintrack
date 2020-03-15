@@ -32,7 +32,8 @@ class InvestmentsPage extends Component {
     => display first ticker chart ---- _/
     => display list of tickers and data ---- _/
     => add & remove tickers ---- _/
-    => display chart for specific ticker ---- o
+    => calculate and display Profit and Loss ---- _/
+    => display chart for specific ticker ---- _/
     // final
     => add validation to fields and duplicate tickers
     => auto update tickers ---- o
@@ -226,6 +227,16 @@ class InvestmentsPage extends Component {
       console.error(e, "error adding ticker");
     }
   }
+  // onClick update chart
+  updateChart(ticker) {
+    let This = this;
+
+    This.setState({
+      current_chart: ticker
+    });
+
+    this.getChartingDataSingleTicker(ticker);
+  }
 
   handleSearch(ticker, qty) {
     let t = ticker.toUpperCase();
@@ -235,13 +246,13 @@ class InvestmentsPage extends Component {
   }
 
   calculatePL(currentPrice, buyPrice) {
-    let PL = ( parseFloat(currentPrice) - parseFloat(buyPrice) ) / parseFloat(buyPrice);
-    return PL.toString();
+    let PL = ( ( ( parseFloat(currentPrice) - parseFloat(buyPrice) ) / parseFloat(buyPrice) ) * 100 ).toFixed(2);
+   
+    return PL.toString() + "%";
   }
 
   render() {
     return (
-      //<h1>InvestmentsPage</h1>
       <div className="flex-container">
         <div id="chart_component">
           <Plot
@@ -255,19 +266,19 @@ class InvestmentsPage extends Component {
               }
             ]}
             style={{ width: '100%', height: '100%' }}
-            layout={ {autosize: true, title: 'Daily Time Series ' + this.state.current_chart} }
+            layout={ {autosize: true, title: this.state.current_chart + ' Daily Time Series'} }
           />
         </div>
         
-        <div id="ticker_component">
+        <div id="ticker_component" style={{textAlign: 'center'}}>
           <SearchTicker onSearch={this.handleSearch.bind(this)} />
           <Loading loading={this.state.adding_ticker}/>
           {this.state.user_tickers_data.data.map((dict) => 
-            <div id={"ticker_container_" + dict.symbol} className="ticker_container" key={dict.symbol}>
+            <div id={"ticker_container_" + dict.symbol} className="ticker_container" key={dict.symbol} onClick={() => this.updateChart(dict.symbol)}>
               <span className="left">{dict.symbol}</span>
-              <span className="qty">{this.state.ticker_qty[dict.symbol]}</span>
-              <span className="buyatprice">{this.state.ticker_buyat_price[dict.symbol]}</span>
-              <span className="profitloss">{"P&L % " + this.calculatePL(this.state.ticker_current_price[dict.symbol], this.state.ticker_buyat_price[dict.symbol])}</span>  
+              <span className="qty"><a>Units: </a>{this.state.ticker_qty[dict.symbol]}    |    </span>
+              <span className="buyatprice"><a>PPS: </a>{this.state.ticker_buyat_price[dict.symbol]}    |    </span>
+              <span className="profitloss"><strong>P&amp;L: </strong>{this.calculatePL(this.state.ticker_current_price[dict.symbol], this.state.ticker_buyat_price[dict.symbol])}    </span>  
               <span className="right"><NumberFormat value={dict.price} displayType={'text'} prefix={'$'} thousandSeparator={true} decimalprecision={2}/></span>
             </div>
           )}

@@ -1,10 +1,10 @@
-/*div#ticker_component {
-    text-align: center;
-}
-*/
+
 input.search_ticker {
     text-align: center;
-    width: 70%;
+    width: 40%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    box-sizing: border-box;
 }
 
 div.ticker_container {
@@ -13,6 +13,13 @@ div.ticker_container {
     width: 70%;
     margin: 5px auto 4px auto;
     padding: 1em;
+    text-align: center;
+}
+
+div.ticker_container:hover {
+    background-color: #3e8e41;
+    color: white;
+    cursor: pointer;
 }
 
 .SearchTicker {
@@ -26,4 +33,19 @@ span.right {
 
 span.left {
     font-weight: bold;
+    float:left;
+}
+
+span.qty, span.buyatprice, span.profitloss {
+    font-size: 70%;
+}
+
+button.btn_search {
+    margin: 5px 5px 5px 5px;
+    border-radius: 50%;
+}
+
+button.btn_search:hover {
+    opacity:80%;
+    cursor: pointer;
 }
