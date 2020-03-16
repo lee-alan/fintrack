@@ -2,9 +2,9 @@
 
 const express = require('express');
 const bodyParser = require('body-parser');
-// const cors = require("cors");
 const axios = require("axios").default;
 const app = express.Router();
+
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 
@@ -12,9 +12,6 @@ const {
     applyValidationRules,
     validate
 } = require("../utilities/inputValidator");
-
-
-//app.use(cors()); limit cors to frontend only later
 
 /**
 Init Mongodb
@@ -65,6 +62,26 @@ app.get("/getQty/:username/", function (req, res) {
    
 });
 
+// fetch buyatprice : dictionary of {ticker: buy at price}
+app.get("/getBuyAt/:username/", function (req, res) {
+    let username = req.params.username;
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+    
+    client.connect(function(err) {
+		if (err) return res.status(500).end(err);
+		
+		const db = client.db("fintrack");
+		db.collection("users").find({username: username }, {projection: {_id:0, buyat:1} }).toArray(function (err, result) {
+            if (err) return res.status(500).end(err);
+            if (!result) return res.json("no tickers");
+            console.log(result);
+            client.close();
+			return res.json(result);
+		});
+	});
+   
+});
+
 // fetch all ticker symbols for given user
 app.get("/getTickers/:username/", function (req, res) {
     let username = req.params.username;
@@ -84,11 +101,19 @@ app.get("/getTickers/:username/", function (req, res) {
 	});
 });
 
+// fetch time_series_intraday data for given ticker symbol
+app.get("/intraday/:ticker/", function (req, res) {
+    let ticker = req.params.ticker;
+	alpha.data.intraday(ticker, outputsize="compact").then(data => {
+        console.log(data);
+        return res.json(data);
+    });
+});
+
 // fetch time_series_daily data for given ticker symbol
 app.get("/daily/:ticker/", function (req, res) {
     let ticker = req.params.ticker;
 	alpha.data.daily(ticker, outputsize="compact").then(data => {
-        //console.log(data);
         return res.json(data);
     });
 });
@@ -137,6 +162,27 @@ app.post("/addqty/:username/:ticker/:qty", function (req, res) {
         db.collection("users").update({username: username}, {$push: {"qty" : add }}, function(err, response) {
             if (err) return res.status(500).end(err);
             console.log("ticker quantity added");
+            client.close();
+            return res.json(response);
+        });
+    }); 
+});
+
+// add ticker buy-at price for a user
+app.post("/addbuyat/:username/:ticker/:price", function (req, res) {
+    let username = req.params.username;
+    let add = {};
+    add[req.params.ticker] = req.params.price;
+
+    const client = new MongoClient(uri, { useNewUrlParser: true });
+
+    client.connect(function(err) {
+        if (err) return res.status(500).end(err);
+        
+        const db = client.db("fintrack");
+        db.collection("users").update({username: username}, {$push: {"buyat" : add }}, function(err, response) {
+            if (err) return res.status(500).end(err);
+            console.log("ticker buy-at price added");
             client.close();
             return res.json(response);
         });

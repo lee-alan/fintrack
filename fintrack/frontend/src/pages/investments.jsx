@@ -16,7 +16,9 @@ class InvestmentsPage extends Component {
     super(props);
     this.state = {
       user_tickers: [],
-      ticker_qty: {'': ''},
+      ticker_qty: {'': ''}, // {ticker1: quantity1,..,ticker1: quantity1}
+      ticker_buyat_price: {'': ''}, // {ticker: price bought at}
+      ticker_current_price:{'': ''}, // {ticker: current price}
       user_tickers_data: {'data': []}, // from wtd api
       chart_x_val: [],
       chart_y_val: [],
@@ -24,15 +26,14 @@ class InvestmentsPage extends Component {
       adding_ticker: false
     };
   }
-  /*
-  dictionary of tickers and quantities : {AAPL : 5 , TSLA : 5, ...}
-  */
+  
   /* TODO
     // beta
     => display first ticker chart ---- _/
     => display list of tickers and data ---- _/
     => add & remove tickers ---- _/
-    => display chart for specific ticker ---- o
+    => calculate and display Profit and Loss ---- _/
+    => display chart for specific ticker ---- _/
     // final
     => add validation to fields and duplicate tickers
     => auto update tickers ---- o
@@ -42,6 +43,8 @@ class InvestmentsPage extends Component {
 
   componentDidMount() {
     this.getTicker(); // get tickers from user profile
+    this.getQty();
+    this.getBuyAt();
   }
   
   getTicker() {
@@ -56,7 +59,7 @@ class InvestmentsPage extends Component {
             user_tickers: response.data[0].tickers,
             current_chart: first_ticker
           });
-      
+          
           this.getChartingDataSingleTicker(first_ticker);
           this.getChartingDataBatch();
         }
@@ -65,38 +68,82 @@ class InvestmentsPage extends Component {
       console.error(e);
     }
   }
-  
-  getQty() {
+
+  getBuyAt() {
     try {
-      axios.get('/api/investments/getQty/' + this.props.user + '/').then(response => {
-        
+      axios.get('/api/investments/getBuyAt/' + this.props.user + '/').then(response => {
         if (response !== "no tickers") {
           const This = this;
-         
+          let dict = {};
+          
+          for (let keys in response.data[0].buyat) {
+            Object.assign(dict, response.data[0].buyat[keys]);
+          }
+          //console.log(dict);
+
           This.setState({
-            ticker_qty: response.data[0].qty // {ticker: "qty"}
+            ticker_buyat_price: dict // {ticker: "qty"}
           });
         }
+        //console.log(this.state.ticker_qty);
       });
     } catch (e) {
       console.error(e);
     }
   }
+  
+  // returns {ticker1: qty1,...,}
+  getQty() {
+    try {
+      axios.get('/api/investments/getQty/' + this.props.user + '/').then(response => {
+        if (response !== "no tickers") {
+          const This = this;
+          let dict = {};
+          
+          for (let keys in response.data[0].qty) {
+            Object.assign(dict, response.data[0].qty[keys]);
+          }
+          //console.log(dict);
 
+          This.setState({
+            ticker_qty: dict // {ticker: "qty"}
+          });
+        }
+        //console.log(this.state.ticker_qty);
+      });
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  
+  // get current data for all users' stocks
   getChartingDataBatch() {
     const This = this;
     let tickers = this.state.user_tickers.join(',');
-    //console.log(tickers);
+    
     axios.get('/api/investments/daily/batch/' + tickers + '/').then(response => {
       let data = response.data;
-      
+      //console.log(data);
       This.setState({
         user_tickers_data: data // list of dictionaries
       });
-      //console.log(this.state.user_tickers_data.data);
+
+      let currentprices = {...this.state.ticker_current_price}; // make a copy of the current price state dictionary
+
+      for (let keys in data["data"]) {
+        let stock = data["data"][keys].symbol;
+        let price = data["data"][keys].price;
+
+        currentprices[stock] = price; // add new ticker and current price
+      }
+      //console.log(currentprices);
+      This.setState({
+        ticker_current_price: currentprices,
+      });
     })
   }
 
+  // get and set charting data
   getChartingDataSingleTicker(ticker) {
     const This = this;
   
@@ -104,12 +151,11 @@ class InvestmentsPage extends Component {
 
     try {
         axios.get('/api/investments/daily/'+ ticker + '/').then(response => {
-    
         let data = response.data;
 
         for (let date_entry in data['Time Series (Daily)']) {
           x_vals.push(date_entry);
-          y_vals.push(data['Time Series (Daily)'][date_entry]['1. open']);
+          y_vals.push(data['Time Series (Daily)'][date_entry]['4. close']);
         }
 
         This.setState({
@@ -122,6 +168,24 @@ class InvestmentsPage extends Component {
     }
   }
   
+  addBuyatPrice(ticker) {
+    const This = this;
+    // get ticker price
+    axios.get('/api/investments/daily/batch/' + ticker + '/').then(response => {
+      let data = response.data; // list of dictionar(y)ies
+      let buyatprice = data["data"]["0"].price; // one dictionary containing stock info
+      console.log(data);
+      // add to db and update state
+        axios.post('/api/investments/addbuyat/' + this.props.user + '/' + ticker + '/' + buyatprice + '/').then(response => {
+          let tickerbuyat = {...this.state.ticker_buyat_price}; // make a copy of the buyat state dictionary
+          tickerbuyat[ticker] = buyatprice; // add new ticker and buy-at price
+          This.setState({
+            ticker_buyat_price: tickerbuyat,
+          });
+      });
+    })
+  }
+
   addTicker(ticker, qty) {
     const This = this;
 
@@ -134,22 +198,26 @@ class InvestmentsPage extends Component {
         // add ticker to ticker list
         let usertickers = this.state.user_tickers.slice();
         usertickers.push(ticker);
-        // add ticker and qty to qty list
+        
+        // add ticker and qty to qty dict
         axios.post('/api/investments/addqty/' + this.props.user + '/' + ticker + '/' + qty + '/').then(response => {
           let tickerqty = {...this.state.ticker_qty}; // make a copy of the qty state dictionary
           tickerqty[ticker] = qty; // add new ticker and qty
           This.setState({
             ticker_qty: tickerqty,
           });
-          console.log(this.state.ticker_qty); 
+          //console.log(this.state.ticker_qty); 
         });
+
+        // add ticker and buy price to db and update state ticker_buyat_price
+        this.addBuyatPrice(ticker);
 
         This.setState({
           user_tickers: usertickers
         });
 
         // fetch new data for all tickers and update state
-        this.getChartingDataBatch(ticker);
+        this.getChartingDataBatch();
         
         This.setState({
           adding_ticker: false
@@ -159,6 +227,16 @@ class InvestmentsPage extends Component {
       console.error(e, "error adding ticker");
     }
   }
+  // onClick update chart
+  updateChart(ticker) {
+    let This = this;
+
+    This.setState({
+      current_chart: ticker
+    });
+
+    this.getChartingDataSingleTicker(ticker);
+  }
 
   handleSearch(ticker, qty) {
     let t = ticker.toUpperCase();
@@ -167,9 +245,14 @@ class InvestmentsPage extends Component {
     this.addTicker(t, qty);
   }
 
+  calculatePL(currentPrice, buyPrice) {
+    let PL = ( ( ( parseFloat(currentPrice) - parseFloat(buyPrice) ) / parseFloat(buyPrice) ) * 100 ).toFixed(2);
+   
+    return PL.toString() + "%";
+  }
+
   render() {
     return (
-      //<h1>InvestmentsPage</h1>
       <div className="flex-container">
         <div id="chart_component">
           <Plot
@@ -183,17 +266,19 @@ class InvestmentsPage extends Component {
               }
             ]}
             style={{ width: '100%', height: '100%' }}
-            layout={ {autosize: true, title: 'Daily Time Series ' + this.state.current_chart} }
+            layout={ {autosize: true, title: this.state.current_chart + ' Daily Time Series'} }
           />
         </div>
         
-        <div id="ticker_component">
+        <div id="ticker_component" style={{textAlign: 'center'}}>
           <SearchTicker onSearch={this.handleSearch.bind(this)} />
           <Loading loading={this.state.adding_ticker}/>
           {this.state.user_tickers_data.data.map((dict) => 
-            <div id={"ticker_container_" + dict.symbol} className="ticker_container" key={dict.symbol}>
+            <div id={"ticker_container_" + dict.symbol} className="ticker_container" key={dict.symbol} onClick={() => this.updateChart(dict.symbol)}>
               <span className="left">{dict.symbol}</span>
-              <span className="qty">{this.state.ticker_qty[dict.symbol]}</span> 
+              <span className="qty"><a>Units: </a>{this.state.ticker_qty[dict.symbol]}    |    </span>
+              <span className="buyatprice"><a>PPS: </a>{this.state.ticker_buyat_price[dict.symbol]}    |    </span>
+              <span className="profitloss"><strong>P&amp;L: </strong>{this.calculatePL(this.state.ticker_current_price[dict.symbol], this.state.ticker_buyat_price[dict.symbol])}    </span>  
               <span className="right"><NumberFormat value={dict.price} displayType={'text'} prefix={'$'} thousandSeparator={true} decimalprecision={2}/></span>
             </div>
           )}

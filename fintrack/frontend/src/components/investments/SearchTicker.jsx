@@ -26,7 +26,7 @@ class SearchTicker extends Component {
                 className='search_ticker'
                 value={this.state.ticker}
                 onChange={event => this.setState({ticker: event.target.value})}
-                placeholder='Enter ticker'
+                placeholder='Enter Ticker'
             />
             <input
                 name='qty'
@@ -34,10 +34,10 @@ class SearchTicker extends Component {
                 className='search_ticker'
                 value={this.state.qty}
                 onChange={event => this.setState({qty: event.target.value})}
-                placeholder='qty'
+                placeholder='Qty'
             />
             <span className="search_btn">
-                <button type='submit' className='btn_search'>+</button>
+                <button type='submit' id='btn_search' className='btn_search'>Buy</button>
             </span>
         </form>
         );
