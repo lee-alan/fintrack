@@ -76,7 +76,8 @@ class LoginPage extends Component {
       .catch(error => {
         console.log(error.response);
         this.setState({
-          error: error.response.data.error
+          error: error.response.data.error,
+          loading: false
         });
       });
     event.preventDefault();
