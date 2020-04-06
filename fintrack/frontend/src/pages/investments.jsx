@@ -35,10 +35,8 @@ class InvestmentsPage extends Component {
     => calculate and display Profit and Loss ---- _/
     => display chart for specific ticker ---- _/
     // final
-    => add validation to fields and duplicate tickers
-    => auto update tickers ---- o
-    => custom currency ---- o
-    => add machine learning model to offer prediction ---- o
+    => add validation to fields and duplicate tickers ---- _/
+    => patch security ---- o
   */
 
   componentDidMount() {
@@ -174,7 +172,7 @@ class InvestmentsPage extends Component {
     axios.get('/api/investments/daily/batch/' + ticker + '/').then(response => {
       let data = response.data; // list of dictionar(y)ies
       let buyatprice = data["data"]["0"].price; // one dictionary containing stock info
-      console.log(data);
+      //console.log(data);
       // add to db and update state
         axios.post('/api/investments/addbuyat/' + this.props.user + '/' + ticker + '/' + buyatprice + '/').then(response => {
           let tickerbuyat = {...this.state.ticker_buyat_price}; // make a copy of the buyat state dictionary
@@ -213,11 +211,13 @@ class InvestmentsPage extends Component {
         this.addBuyatPrice(ticker);
 
         This.setState({
-          user_tickers: usertickers
+          user_tickers: usertickers,
+          current_chart: ticker,
         });
 
         // fetch new data for all tickers and update state
         this.getChartingDataBatch();
+        this.getChartingDataSingleTicker(ticker);
         
         This.setState({
           adding_ticker: false
@@ -227,6 +227,44 @@ class InvestmentsPage extends Component {
       console.error(e, "error adding ticker");
     }
   }
+
+  deleteTicker(ticker) {
+    const This = this;
+    // remove ticker entry from database
+    axios.delete('/api/investments/removeticker/' + this.props.user + '/' + ticker + '/').then(response => {
+      let tickerqty = {...this.state.ticker_qty}; // make a copy of the qty state dictionary
+      delete tickerqty[ticker]; // remove ticker from qty dictionary
+      
+      let usertickers = this.state.user_tickers.slice();
+      const index = usertickers.indexOf(ticker);
+      if (index > -1) {
+        usertickers.splice(index, 1);
+      }
+      
+      // update state
+      This.setState({
+        ticker_qty: tickerqty,
+        user_tickers: usertickers,
+      });
+
+      if (this.state.user_tickers.length !== 0) {
+        let next_ticker = this.state.user_tickers[0];
+        this.getChartingDataBatch();
+        this.getChartingDataSingleTicker(next_ticker);
+        This.setState({
+          current_chart: next_ticker,
+        });
+      } else { // reset blanks
+        This.setState({
+          chart_x_val: [],
+          chart_y_val: [],
+          current_chart: "",
+          user_tickers_data: {'data': []},
+        });
+      }
+    });
+  }
+  
   // onClick update chart
   updateChart(ticker) {
     let This = this;
@@ -240,8 +278,7 @@ class InvestmentsPage extends Component {
 
   handleSearch(ticker, qty) {
     let t = ticker.toUpperCase();
-    // validate qty
-    // validate ticker
+    qty = qty.toString();
     this.addTicker(t, qty);
   }
 
@@ -273,13 +310,18 @@ class InvestmentsPage extends Component {
         <div id="ticker_component" style={{textAlign: 'center'}}>
           <SearchTicker onSearch={this.handleSearch.bind(this)} />
           <Loading loading={this.state.adding_ticker}/>
-          {this.state.user_tickers_data.data.map((dict) => 
-            <div id={"ticker_container_" + dict.symbol} className="ticker_container" key={dict.symbol} onClick={() => this.updateChart(dict.symbol)}>
-              <span className="left">{dict.symbol}</span>
-              <span className="qty"><a>Units: </a>{this.state.ticker_qty[dict.symbol]}    |    </span>
-              <span className="buyatprice"><a>PPS: </a>{this.state.ticker_buyat_price[dict.symbol]}    |    </span>
-              <span className="profitloss"><strong>P&amp;L: </strong>{this.calculatePL(this.state.ticker_current_price[dict.symbol], this.state.ticker_buyat_price[dict.symbol])}    </span>  
-              <span className="right"><NumberFormat value={dict.price} displayType={'text'} prefix={'$'} thousandSeparator={true} decimalprecision={2}/></span>
+          {this.state.user_tickers_data.data.map((dict) =>
+            <div key={dict.symbol + "_+"}>
+              <span className="delete_btn">
+                <button onClick={() => this.deleteTicker(dict.symbol)} id='btn_delete' className='btn_delete'> X </button>
+              </span>
+              <div id={"ticker_container_" + dict.symbol} className="ticker_container" key={dict.symbol} onClick={() => this.updateChart(dict.symbol)}>   
+                <span className="left">{dict.symbol}</span>
+                <span className="qty"><a>Units: </a>{this.state.ticker_qty[dict.symbol]}    |    </span>
+                <span className="buyatprice"><a>PPS: </a>{this.state.ticker_buyat_price[dict.symbol]}    |    </span>
+                <span className="profitloss"><strong>P&amp;L: </strong>{this.calculatePL(this.state.ticker_current_price[dict.symbol], this.state.ticker_buyat_price[dict.symbol])}    </span>  
+                <span className="right"><NumberFormat value={dict.price} displayType={'text'} prefix={'$'} thousandSeparator={true} decimalprecision={2}/></span>
+              </div>
             </div>
           )}
         </div>
@@ -287,5 +329,8 @@ class InvestmentsPage extends Component {
     );
   }
 }
+/*
+   
+*/
 
 export default InvestmentsPage;

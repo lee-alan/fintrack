@@ -27,6 +27,11 @@ div.ticker_container:hover {
     justify-content: center;
 }
 
+span.delete_btn {
+    float:left;
+    margin-top: 20px;
+}
+
 span.right {
     float: right;
 }
