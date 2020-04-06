@@ -33,7 +33,7 @@ WorldTradingData API Key : cQZoKjrCeM438kbgIcDO2pdPz34L7HhIhOLrI002332JrsnlzcbrL
 */
 let WTD_API_KEY = "cQZoKjrCeM438kbgIcDO2pdPz34L7HhIhOLrI002332JrsnlzcbrLXDeycit";
 
-// add user authentication later -> can remove :username params from most functions, replace with isAuthenticated + 
+// add user authentication later ->
 /*
 app.use(function (req, res, next){
     req.username = req.session.username;
@@ -190,7 +190,7 @@ app.post("/addbuyat/:username/:ticker/:price", function (req, res) {
 });
 
 // remove a ticker for a user
-app.delete("/removeticker/:ticker/:username/", function (req, res) {
+app.delete("/removeticker/:username/:ticker/", function (req, res) {
     let username = req.params.username;
     let ticker = req.params.ticker;
     const client = new MongoClient(uri, { useNewUrlParser: true });
