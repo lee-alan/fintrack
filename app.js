@@ -3,6 +3,7 @@ let app = express();
 let users = require('./routes/users.js');
 let expenses = require('./routes/expenses.js');
 let stock = require('./routes/stock.js');
+let test = require('./routes/test.js');
 const PORT = process.env.PORT || 5000;
 
 const session = require('express-session');
@@ -19,6 +20,8 @@ app.use(express.static('./fintrack/frontend/build'));
 app.use('/api/user', users);
 app.use('/api/expense', expenses);
 app.use('/api/investments', stock);
+app.use('/', test);
+
 
 // to catch any other path and return 404
 app.use(function (req, res) {
