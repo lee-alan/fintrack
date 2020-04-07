@@ -1,6 +1,8 @@
 const executeQuery = require('../utilities/mongoConnect').executeQuery;
 const db = "fintrack";
 const users_collection = "users";
+const tokens_collection = "tokens";
+
 
 exports.add_user = async (username, email, password, salt) => {
     return await executeQuery(db, async (db) => await db.collection(users_collection).insertOne(
@@ -38,6 +40,12 @@ exports.update_salary = async (username, salary) => {
 };
 
 exports.save_token = async (username, token) => {
-    return await executeQuery(db, async (db) => await db.collection(users_collection).updateOne(
-        {username: username}, {$set: {token: token}}));
-}
+    await executeQuery(db, async (db) => await db.collection(tokens_collection).createIndex( { "createdAt": 1 }, { expireAfterSeconds: 3600 } ));
+    return await executeQuery(db, async (db) => await db.collection(tokens_collection).updateOne(
+        {username: username}, {$set: {token: token,  createdAt: new Date()}}, {upsert: true}));
+};
+
+exports.get_token = async (username) => {
+    return await executeQuery(db, async (db) => await db.collection(tokens_collection).findOne(
+        {username: username}));
+};

@@ -13,7 +13,8 @@ const {
   update_email,
   update_salary,
   update_password,
-  save_token
+  save_token,
+    get_token
 } = require("../dataAccess/usersData");
 
 const {
@@ -108,7 +109,8 @@ router.post(
 
     const token = Math.floor(100000 + Math.random() * 900000);
     let token_process = await save_token(username, token);
-    if(token_process && token_process.modifiedCount){
+    console.log(token_process);
+    if(token_process && (token_process.modifiedCount || token_process.upsertedCount)){
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -159,7 +161,13 @@ router.post(
         var saltedHash = hash.digest("base64");
         password = saltedHash;
         console.log(password, salt);
-        if (user.password !== password || user.token !== parseInt(token))
+        let saved_token = await get_token(username);
+        if(saved_token){
+            saved_token = saved_token.token;
+        }
+        console.log(saved_token, token);
+
+        if (user.password !== password || saved_token !== parseInt(token))
             return res.status(401).json({ error: "access denied" });
         // initialize cookie
         res.setHeader(
