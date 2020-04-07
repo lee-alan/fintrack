@@ -17,15 +17,34 @@
 $ curl -X POST
        -H "Content-Type: `application/json`"
        -d '{"username":"me","password":"pass"}
-       http://localhost:3000/api/user/signup/'
+       http://localhost:5000/api/user/signup/'
 ```
 
-- description: Sign in as existing user
-- request: `POST /api/user/signin/`
+- description: Sign in as existing user first phase
+- request: `POST /api/user/signin/first`
   - content-type: `application/json`
   - body: object
     - username: (string) unique username
     - password: (string) password for user
+- response: 200
+  - content-type: `application/json`
+  - body: (string) Email sent
+
+```
+$ curl -X POST
+       -H "Content-Type: `application/json`"
+       -d '{"username":"me","password":"pass"}
+       -c cookie.txt
+       http://localhost:5000/api/user/signin/first'
+```
+
+- description: Sign in as existing user second phase
+- request: `POST /api/user/signin/second`
+  - content-type: `application/json`
+  - body: object
+    - username: (string) unique username
+    - password: (string) password for user
+    - token: (integer) this is sent to user's email
 - response: 200
   - content-type: `application/json`
   - body: (string) username that signed in
@@ -35,7 +54,7 @@ $ curl -X POST
        -H "Content-Type: `application/json`"
        -d '{"username":"me","password":"pass"}
        -c cookie.txt
-       http://localhost:3000/api/user/signin/'
+       http://localhost:5000/api/user/signin/first'
 ```
 
 - description: Sign out of session (destory session)
@@ -215,4 +234,18 @@ $ curl -b cookie.txt -X GET
 ```
 $ curl -b cookie.txt -X DELETE
        http://localhost:3003/api/expenses/jed5672jd90xg4awo789/
+```
+## News
+
+###Get latest Bloomberg news
+
+- description: Get latest news
+- request: `GET /api/news/`
+- response: 200
+  - content-type: `application/json`
+  - body: object
+
+```
+$ curl -b cookie.txt -X DELETE
+       http://localhost:500/api/news
 ```

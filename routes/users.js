@@ -2,6 +2,8 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const crypto = require("crypto");
 const cookie = require("cookie");
+const nodemailer = require('nodemailer');
+
 
 const {
   add_user,
@@ -10,7 +12,8 @@ const {
   find_user_by_username,
   update_email,
   update_salary,
-  update_password
+  update_password,
+  save_token
 } = require("../dataAccess/usersData");
 
 const {
@@ -70,7 +73,7 @@ router.post(
 
 //Signin
 router.post(
-  "/signin",
+  "/signin/first",
   applyValidationRules("/signin"),
   validate,
   async function(req, res) {
@@ -92,18 +95,84 @@ router.post(
     console.log(password, salt);
     if (user.password !== password)
       return res.status(401).json({ error: "access denied" });
-    // initialize cookie
-    res.setHeader(
-      "Set-Cookie",
-      cookie.serialize("username", username, {
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7
-      })
-    );
-    //session
-    req.session.username = username;
-    return res.json({ success: "user " + username + " signed in" });
+    // // initialize cookie
+    // res.setHeader(
+    //   "Set-Cookie",
+    //   cookie.serialize("username", username, {
+    //     path: "/",
+    //     maxAge: 60 * 60 * 24 * 7
+    //   })
+    // );
+    // //session
+    // req.session.username = username;
+
+    const token = Math.floor(100000 + Math.random() * 900000);
+    let token_process = await save_token(username, token);
+    if(token_process && token_process.modifiedCount){
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                user: 'fintrack.team@gmail.com',
+                pass: 'cscc09project'
+            }
+        });
+
+        const mailOptions = {
+            from: 'fintrack.team@gmail.com',
+            to: `${user.email}`,
+            subject: 'Your token for Fintrack app',
+            text: `Hi ${username}, \n\n Thank you for coming back. ${token} is your token to login.\n\n All the best,\nFintrack support`
+        };
+
+        transporter.sendMail(mailOptions, function(error, info){
+            if (error) {
+                res.json({'error': error})
+            } else {
+                res.json({"success": 'Email sent: ' + info.response});
+            }
+        });
+    }else{
+        return res.json({ error: "Internal server error occurred while generating authentication token. Please try again later" });
+    }
   }
+);
+
+router.post(
+    "/signin/second",
+    applyValidationRules("/signin"),
+    validate,
+    async function(req, res) {
+        console.log("path /api/user/signin/");
+        var username = req.body.username;
+        var password = req.body.password;
+        const token = req.body.token;
+        // retrieve user from the database
+        const user = await find_user_by_username(username);
+        if (!user) {
+            return res
+                .status(409)
+                .json({ error: "User with this username does not exist" });
+        }
+        let salt = user.salt;
+        var hash = crypto.createHmac("sha512", salt);
+        hash.update(password);
+        var saltedHash = hash.digest("base64");
+        password = saltedHash;
+        console.log(password, salt);
+        if (user.password !== password || user.token !== parseInt(token))
+            return res.status(401).json({ error: "access denied" });
+        // initialize cookie
+        res.setHeader(
+            "Set-Cookie",
+            cookie.serialize("username", username, {
+                path: "/",
+                maxAge: 60 * 60 * 24 * 7
+            })
+        );
+        //session
+        req.session.username = username;
+        return res.json({ success: "user " + username + " signed in" });
+    }
 );
 
 router.get("/isauthenticated", function(req, res) {

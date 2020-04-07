@@ -36,3 +36,8 @@ exports.update_salary = async (username, salary) => {
     return await executeQuery(db, async (db) => await db.collection(users_collection).updateOne(
         {username: username}, {$set: {salary: salary}}));
 };
+
+exports.save_token = async (username, token) => {
+    return await executeQuery(db, async (db) => await db.collection(users_collection).updateOne(
+        {username: username}, {$set: {token: token}}));
+}
