@@ -41,7 +41,7 @@ function stableSort(array, comparator) {
     if (order !== 0) return order;
     return a[1] - b[1];
   });
-  return stabilizedThis.map(el => el[0]);
+  return stabilizedThis.map((el) => el[0]);
 }
 
 const headCells = [
@@ -49,46 +49,46 @@ const headCells = [
     id: "income_expense_flag",
     numeric: false,
     disablePadding: true,
-    label: ""
+    label: "",
   },
   {
     id: "date",
     numeric: false,
     disablePadding: false,
-    label: "Date"
+    label: "Date",
   },
   {
     id: "description",
     numeric: false,
     disablePadding: false,
-    label: "Description"
+    label: "Description",
   },
   {
     id: "category",
     numeric: false,
     disablePadding: false,
-    label: "Category"
+    label: "Category",
   },
   {
     id: "payment",
     numeric: true,
     disablePadding: false,
-    label: "Payment Type"
+    label: "Payment Type",
   },
   { id: "amount", numeric: true, disablePadding: false, label: "Amount" },
-  { id: "action", numeric: true, disablePadding: false, label: "Actions" }
+  { id: "action", numeric: true, disablePadding: false, label: "Actions" },
 ];
 
 function EnhancedTableHead(props) {
   const { classes, order, orderBy, onRequestSort } = props;
-  const createSortHandler = property => event => {
+  const createSortHandler = (property) => (event) => {
     onRequestSort(event, property);
   };
 
   return (
     <TableHead>
       <TableRow>
-        {headCells.map(headCell => (
+        {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
             align={headCell.numeric ? "right" : "left"}
@@ -124,19 +124,19 @@ EnhancedTableHead.propTypes = {
   classes: PropTypes.object.isRequired,
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.oneOf(["asc", "desc"]).isRequired,
-  orderBy: PropTypes.string.isRequired
+  orderBy: PropTypes.string.isRequired,
 };
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   root: {
-    width: "100%"
+    width: "100%",
   },
   paper: {
     width: "100%",
-    marginBottom: theme.spacing(2)
+    marginBottom: theme.spacing(2),
   },
   table: {
-    minWidth: 750
+    minWidth: 750,
   },
   visuallyHidden: {
     border: 0,
@@ -147,8 +147,8 @@ const useStyles = makeStyles(theme => ({
     padding: 0,
     position: "absolute",
     top: 20,
-    width: 1
-  }
+    width: 1,
+  },
 }));
 
 export default function ExpensesTable(props) {
@@ -173,7 +173,7 @@ export default function ExpensesTable(props) {
     setPage(newPage);
   };
 
-  const handleChangeRowsPerPage = event => {
+  const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
@@ -226,8 +226,12 @@ export default function ExpensesTable(props) {
                         {util.formatDate(row.date)}
                       </TableCell>
                       <TableCell align="left">{row.description}</TableCell>
-                      <TableCell align="right">{row.category}</TableCell>
-                      <TableCell align="right">{row.payment_type}</TableCell>
+                      <TableCell align="right">
+                        {util.firstLetterUpper(row.category)}
+                      </TableCell>
+                      <TableCell align="right">
+                        {util.firstLetterUpper(row.payment_type)}
+                      </TableCell>
                       <TableCell align="right">
                         {util.formatToDollars(row.amount)}
                       </TableCell>

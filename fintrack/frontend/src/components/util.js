@@ -11,7 +11,7 @@ class Util {
     "September",
     "October",
     "November",
-    "December"
+    "December",
   ];
 
   formatToDollars(n) {
@@ -87,6 +87,10 @@ class Util {
 
     return st.concat(date.getFullYear());
   }
+
+  firstLetterUpper(word) {
+    return word.charAt(0).toUpperCase() + word.substring(1);
+  }
 }
 
 export let util = new Util();
@@ -95,5 +99,8 @@ export let categories = [
   "Food",
   "Entertainment",
   "Travel",
-  "Miscellaneous"
+  "Miscellaneous",
 ];
+export let payment_types = ["Credit", "Debit", "Cash"];
+export let categories_zeroVal = [0, 0, 0, 0, 0];
+export let payment_types_zeroVal = [0, 0, 0];
