@@ -3,39 +3,40 @@ import "../style/main.css";
 import "../style/dashboard.css";
 import ExpenseDash from "../components/dashboard/expenseOverview";
 import InvestDash from "../components/dashboard/investmentsOverview";
+import NewsDash from "../components/dashboard/newsOverview";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core/styles";
 import clsx from "clsx";
 import MainTitle from "../components/pageTitle";
 
-const styles = makeStyles(theme => ({
+const styles = makeStyles((theme) => ({
   root: {
-    display: "flex"
+    display: "flex",
   },
   title: {
-    flexGrow: 1
+    flexGrow: 1,
   },
   container: {
     paddingTop: theme.spacing(4),
     paddingBottom: theme.spacing(4),
     display: "flex",
     flexDirection: "row",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
   },
   dash_item: {
     width: "350px",
-    margin: "24px"
+    margin: "24px",
   },
   paper: {
     padding: "5px",
     display: "flex",
     flexDirection: "column",
     width: "100%",
-    height: "100%"
+    height: "100%",
   },
   fixedHeight: {
-    height: "200px"
+    height: "200px",
   },
   hover_paper: {
     cursor: "pointer !important",
@@ -43,14 +44,14 @@ const styles = makeStyles(theme => ({
 
     "&:hover": {
       border: "1px solid black",
-      boxShadow: "10px 5px 5px grey"
-    }
+      boxShadow: "10px 5px 5px grey",
+    },
   },
   expandedDashItem: {
     height: "500px",
     width: "max(800px, 80%)",
-    margin: "24px"
-  }
+    margin: "24px",
+  },
 }));
 
 export default function DashBoard(props) {
@@ -103,6 +104,7 @@ export default function DashBoard(props) {
           </Paper>
         </div>
       </Container>
+      <NewsDash />
     </main>
   );
 }
