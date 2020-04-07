@@ -1,0 +1,6 @@
+.expenseImage {
+  background-image: url("../media/fintrack_gal1.png");
+  object-fit: contain;
+  width: 60%;
+  height: auto;
+}

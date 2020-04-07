@@ -8,19 +8,20 @@ import AddExpenseDialog from "../components/expenses/addExpense";
 import ExpenseFilter from "../components/expenses/expenseFilter";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import axios from "axios";
+import { util } from "../components/util";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   button: {
     margin: theme.spacing(1),
-    marginBottom: "10px"
+    marginBottom: "10px",
   },
   loading: {
     width: "100%",
     height: "100%",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
-  }
+    justifyContent: "center",
+  },
 }));
 
 function createData(data) {
@@ -31,7 +32,7 @@ function createData(data) {
     category: data.category,
     payment_type: data.payment_type,
     amount: data.amount,
-    isExpense: data.type === "income" ? false : true
+    isExpense: data.type === "income" ? false : true,
   };
 }
 
@@ -49,7 +50,8 @@ export default function ExpensePage(props) {
       currentPage,
       "&page_limit=",
       loadMax,
-      "&payment_types=[]&categories=[]&types=[]"
+      "&payment_types=[]&categories=[]&types=[]&start=",
+      util.formatDateAPI(util.getFirstDayOfMonth())
     )
   );
 
@@ -58,11 +60,11 @@ export default function ExpensePage(props) {
       // Query database and load new
       axios
         .get(currentQuery)
-        .then(response => {
+        .then((response) => {
           setRows(response.data.map(createData));
           setLoadRows(false);
         })
-        .catch(error => {
+        .catch((error) => {
           console.log("Error: ", error.response);
         });
     }
@@ -72,7 +74,7 @@ export default function ExpensePage(props) {
     setOpen(true);
   };
 
-  const handleSearchQuery = query => {
+  const handleSearchQuery = (query) => {
     // Call backend and fill rows with relevant data
     setLoadRows(true);
     setCurrentQuery(
@@ -105,7 +107,7 @@ export default function ExpensePage(props) {
     setLoadRows(true);
   };
 
-  const handleClose = value => {
+  const handleClose = (value) => {
     setOpen(false);
   };
   const classes = useStyles();
