@@ -11,16 +11,34 @@
     - password: (string) password for user
 - response: 200
   - content-type: `application/json`
-  - body: (string) username that was created
+  - body: (string) Email with token sent
 
 ```
 $ curl -X POST
        -H "Content-Type: `application/json`"
-       -d '{"username":"me","password":"pass"}
+       -d '{"username":"me","email": "asd@fas.com","password":"pass"}
        http://localhost:5000/api/user/signup/'
 ```
 
-- description: Sign in as existing user first phase
+- description: ValidateToken
+- request: `POST api/user/validateToken`
+  - content-type: `application/json`
+  - body: object
+    - username: (string) unique username
+    - token: (number) token that was sent to user's email
+    - password: (string) password for user
+- response: 200
+  - content-type: `application/json`
+  - body: (string) User signed up
+
+```
+$ curl -X POST
+       -H "Content-Type: `application/json`"
+       -d '{"username":"me","token": "123456","password":"pass"}
+       http://localhost:5000/api/user/validateToken/'
+```
+
+- description: Sign in as existing user
 - request: `POST /api/user/signin/first`
   - content-type: `application/json`
   - body: object
@@ -28,7 +46,7 @@ $ curl -X POST
     - password: (string) password for user
 - response: 200
   - content-type: `application/json`
-  - body: (string) Email sent
+  - body: (string) User signed in
 
 ```
 $ curl -X POST
@@ -38,24 +56,6 @@ $ curl -X POST
        http://localhost:5000/api/user/signin/first'
 ```
 
-- description: Sign in as existing user second phase
-- request: `POST /api/user/signin/second`
-  - content-type: `application/json`
-  - body: object
-    - username: (string) unique username
-    - password: (string) password for user
-    - token: (integer) this is sent to user's email
-- response: 200
-  - content-type: `application/json`
-  - body: (string) username that signed in
-
-```
-$ curl -X POST
-       -H "Content-Type: `application/json`"
-       -d '{"username":"me","password":"pass"}
-       -c cookie.txt
-       http://localhost:5000/api/user/signin/first'
-```
 
 - description: Sign out of session (destory session)
 - request: `POST /api/user/signout/`
