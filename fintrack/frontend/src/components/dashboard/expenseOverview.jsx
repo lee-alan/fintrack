@@ -20,22 +20,22 @@ function Title(props) {
 }
 
 Title.propTypes = {
-  children: PropTypes.node
+  children: PropTypes.node,
 };
 
-const styles = makeStyles(theme => ({
+const styles = makeStyles((theme) => ({
   expenseText: {
     color: "red",
-    fontSize: "35px"
+    fontSize: "35px",
   },
   incomeText: {
     color: "green",
-    fontSize: "35px"
+    fontSize: "35px",
   },
   netIncomeText: {
     color: "black",
     fontWeight: "bold",
-    fontSize: "35px"
+    fontSize: "35px",
   },
   mainFrame: {
     display: "flex",
@@ -43,25 +43,25 @@ const styles = makeStyles(theme => ({
     justifyContent: "center",
     alignItems: "center",
     height: "100%",
-    width: "100%"
+    width: "100%",
   },
   paperClass: {
     width: "100%",
-    height: "100%"
+    height: "100%",
   },
   sumCol: {
-    height: "100%"
+    height: "100%",
   },
   graphCol: {
-    flex: 2
+    flex: 2,
   },
   loading: {
     width: "100%",
     height: "100%",
     display: "flex",
     alignItems: "center",
-    justifyContent: "center"
-  }
+    justifyContent: "center",
+  },
 }));
 
 export default function ExpenseDash(props) {
@@ -80,7 +80,7 @@ export default function ExpenseDash(props) {
     (async function getData() {
       axios
         .get("/api/user/info/".concat(user))
-        .then(response => {
+        .then((response) => {
           axios
             .get(
               "/api/expense/multiple-sum/".concat(
@@ -90,14 +90,15 @@ export default function ExpenseDash(props) {
                 '?page_number=1&page_limit=1000&payment_types=[]&types=["income"]&categories=[]'
               )
             )
-            .then(resIn => {
-              setIncomeSum(response.data.salary + resIn.data.sum);
+            .then((resIn) => {
+              let s = response.data.salary ? response.data.salary : 0;
+              setIncomeSum(s + resIn.data.sum);
             })
-            .catch(err => {
+            .catch((err) => {
               console.log(err.response);
             });
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err.response);
         });
       // TODO: axios to fetch this data and setData
@@ -110,7 +111,7 @@ export default function ExpenseDash(props) {
               user,
               "/",
               new Date().getMonth() + 1,
-              '?page_number=1&page_limit=1000&payment_types=[]&types=[]&categories=["',
+              '?page_number=1&page_limit=1000&payment_types=[]&types=["expense"]&categories=["',
               categories[i].toLowerCase(),
               '"]'
             )
@@ -168,8 +169,9 @@ export default function ExpenseDash(props) {
                     text: categoryText,
                     textinfo: "label",
                     hoverinfo: "none",
-                    hovertemplate: "<extra></extra>%{label} <br>Amount: %{text}"
-                  }
+                    hovertemplate:
+                      "<extra></extra>%{label} <br>Amount: %{text}",
+                  },
                 ]}
                 style={{ width: "100%", height: "100%" }}
               ></Plot>
