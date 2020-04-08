@@ -6,6 +6,7 @@ import { Button } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import AddExpenseDialog from "../components/expenses/addExpense";
 import ExpenseFilter from "../components/expenses/expenseFilter";
+import ExpenseSummary from "../components/expenses/expenseSummary";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import axios from "axios";
 import { util } from "../components/util";
@@ -115,6 +116,13 @@ export default function ExpensePage(props) {
   return (
     <main>
       <MainTitle>Expenses</MainTitle>
+      {loadRows ? (
+        <div className={classes.loading}>
+          <CircularProgress />
+        </div>
+      ) : (
+        <ExpenseSummary rows={rows} />
+      )}
       <Button
         variant="contained"
         color="primary"
