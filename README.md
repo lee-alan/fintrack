@@ -45,3 +45,11 @@ Our web app is going to be a personal finance tracker, where you can track credi
 - --Integrating multiple APIs
 - --Learning and utilizing TypeScript
 - --React.js
+
+# Run App on Dev
+
+1. `node app,js` keep this running (backend)
+2. `cd ./fintrank/frondend`
+3. `npm start` keep this running (frontend react)
+
+If build files are already ready then run `npm start` at the root.
