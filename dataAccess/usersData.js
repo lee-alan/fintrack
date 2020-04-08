@@ -39,10 +39,10 @@ exports.update_salary = async (username, salary) => {
         {username: username}, {$set: {salary: salary}}));
 };
 
-exports.save_token = async (username, token) => {
+exports.save_token = async (username, token, email, password, salt) => {
     await executeQuery(db, async (db) => await db.collection(tokens_collection).createIndex( { "createdAt": 1 }, { expireAfterSeconds: 3600 } ));
     return await executeQuery(db, async (db) => await db.collection(tokens_collection).updateOne(
-        {username: username}, {$set: {token: token,  createdAt: new Date()}}, {upsert: true}));
+        {username: username}, {$set: {token: token,  email: email, password: password, salt: salt, createdAt: new Date()}}, {upsert: true}));
 };
 
 exports.get_token = async (username) => {

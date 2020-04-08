@@ -33,29 +33,129 @@ router.get("/", async function(req, res) {
   res.status(200).send("/api/user/ in users controller");
 });
 //Signup
-router.post(
-  "/signup",
-  applyValidationRules("/signup"),
-  validate,
-  async function(req, res) {
-    console.log("path /api/user/signup/");
-    let username = req.body.username;
-    let password = req.body.password;
-    let email = req.body.email;
-    const exists = await find_user_by_username(username);
-    if (exists) {
-      return res
-        .status(409)
-        .json({ error: "User with this username already exists" });
-    }
-    let salt = crypto.randomBytes(16).toString("base64");
-    let hash = crypto.createHmac("sha512", salt);
-    hash.update(password);
-    let saltedHash = hash.digest("base64");
-    password = saltedHash;
-    const user = await add_user(username, email, password, salt);
+// router.post(
+//   "/signup",
+//   applyValidationRules("/signup"),
+//   validate,
+//   async function(req, res) {
+//     console.log("path /api/user/signup/");
+//     let username = req.body.username;
+//     let password = req.body.password;
+//     let email = req.body.email;
+//     const exists = await find_user_by_username(username);
+//     if (exists) {
+//       return res
+//         .status(409)
+//         .json({ error: "User with this username already exists" });
+//     }
+//     let salt = crypto.randomBytes(16).toString("base64");
+//     let hash = crypto.createHmac("sha512", salt);
+//     hash.update(password);
+//     let saltedHash = hash.digest("base64");
+//     password = saltedHash;
+//     const user = await add_user(username, email, password, salt);
+//
+//     if (user) {
+//       req.session.username = username;
+//       res.setHeader(
+//         "Set-Cookie",
+//         cookie.serialize("username", username, {
+//           path: "/",
+//           maxAge: 60 * 60 * 24 * 7
+//         })
+//       );
+//       return res
+//         .status(200)
+//         .json({ success: "user " + username + " signed up" });
+//     }
+//     return res.status(500).json({ error: "Internal server error" });
+//   }
+// );
 
-    if (user) {
+router.post(
+    "/signup",
+    applyValidationRules("/signup"),
+    validate,
+    async function(req, res) {
+        console.log("path /api/user/signup/");
+        let username = req.body.username;
+        let password = req.body.password;
+        let email = req.body.email;
+        const exists_in_user_db = await find_user_by_username(username);
+        const exists_in_token_db = await get_token(username);
+
+        if (exists_in_user_db || exists_in_token_db) {
+            return res
+                .status(409)
+                .json({ error: "User with this username already exists" });
+        }
+        let salt = crypto.randomBytes(16).toString("base64");
+        let hash = crypto.createHmac("sha512", salt);
+        hash.update(password);
+        let saltedHash = hash.digest("base64");
+        password = saltedHash;
+        const token = Math.floor(100000 + Math.random() * 900000);
+        const token_process = await save_token(username, token, email, password, salt);
+
+        if(token_process && (token_process.modifiedCount || token_process.upsertedCount)){
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'fintrack.team@gmail.com',
+                    pass: 'cscc09project'
+                }
+            });
+
+            const mailOptions = {
+                from: 'fintrack.team@gmail.com',
+                to: `${email}`,
+                subject: 'Your token for Fintrack app',
+                text: `Hi ${username}, \n\n Thank you for signing up to Fintrack. ${token} is your token.\n\n All the best,\nFintrack support`
+            };
+
+            transporter.sendMail(mailOptions, function(error, info){
+                if (error) {
+                    res.json({'error': error})
+                } else {
+                    res.json({"success": 'Email sent: ' + info.response});
+                }
+            });
+        }else{
+            return res.json({ error: "Internal server error occurred while generating authentication token. Please try again later" });
+        }
+    }
+);
+
+router.post(
+    "/validateToken",
+    applyValidationRules("/signin"),
+    validate,
+    async function(req, res) {
+        console.log("path /api/user/signin/");
+        var username = req.body.username;
+        var password = req.body.password;
+        const token = req.body.token;
+        // retrieve user from the database
+        const user = await get_token(username);
+        if (!user) {
+            return res
+                .status(409)
+                .json({ error: "User with this username does not exist" });
+        }
+        let salt = user.salt;
+        var hash = crypto.createHmac("sha512", salt);
+        hash.update(password);
+        var saltedHash = hash.digest("base64");
+        password = saltedHash;
+        console.log(password, salt);
+
+        if (user.password !== password || user.token !== parseInt(token))
+            return res.status(401).json({ error: "access denied" });
+        // initialize cookie
+
+        const result = await add_user(user.username, user.email, user.password, user.salt);
+
+    if (result) {
       req.session.username = username;
       res.setHeader(
         "Set-Cookie",
@@ -68,79 +168,14 @@ router.post(
         .status(200)
         .json({ success: "user " + username + " signed up" });
     }
-    return res.status(500).json({ error: "Internal server error" });
-  }
+        return res.status(500).json({ error: "Internal server error" });
+    }
 );
 
 //Signin
-router.post(
-  "/signin/first",
-  applyValidationRules("/signin"),
-  validate,
-  async function(req, res) {
-    console.log("path /api/user/signin/");
-    var username = req.body.username;
-    var password = req.body.password;
-    // retrieve user from the database
-    const user = await find_user_by_username(username);
-    if (!user) {
-      return res
-        .status(409)
-        .json({ error: "User with this username does not exist" });
-    }
-    let salt = user.salt;
-    var hash = crypto.createHmac("sha512", salt);
-    hash.update(password);
-    var saltedHash = hash.digest("base64");
-    password = saltedHash;
-    console.log(password, salt);
-    if (user.password !== password)
-      return res.status(401).json({ error: "access denied" });
-    // // initialize cookie
-    // res.setHeader(
-    //   "Set-Cookie",
-    //   cookie.serialize("username", username, {
-    //     path: "/",
-    //     maxAge: 60 * 60 * 24 * 7
-    //   })
-    // );
-    // //session
-    // req.session.username = username;
-
-    const token = Math.floor(100000 + Math.random() * 900000);
-    let token_process = await save_token(username, token);
-    console.log(token_process);
-    if(token_process && (token_process.modifiedCount || token_process.upsertedCount)){
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                user: 'fintrack.team@gmail.com',
-                pass: 'cscc09project'
-            }
-        });
-
-        const mailOptions = {
-            from: 'fintrack.team@gmail.com',
-            to: `${user.email}`,
-            subject: 'Your token for Fintrack app',
-            text: `Hi ${username}, \n\n Thank you for coming back. ${token} is your token to login.\n\n All the best,\nFintrack support`
-        };
-
-        transporter.sendMail(mailOptions, function(error, info){
-            if (error) {
-                res.json({'error': error})
-            } else {
-                res.json({"success": 'Email sent: ' + info.response});
-            }
-        });
-    }else{
-        return res.json({ error: "Internal server error occurred while generating authentication token. Please try again later" });
-    }
-  }
-);
 
 router.post(
-    "/signin/second",
+    "/signin",
     applyValidationRules("/signin"),
     validate,
     async function(req, res) {
@@ -161,13 +196,9 @@ router.post(
         var saltedHash = hash.digest("base64");
         password = saltedHash;
         console.log(password, salt);
-        let saved_token = await get_token(username);
-        if(saved_token){
-            saved_token = saved_token.token;
-        }
-        console.log(saved_token, token);
 
-        if (user.password !== password || saved_token !== parseInt(token))
+
+        if (user.password !== password)
             return res.status(401).json({ error: "access denied" });
         // initialize cookie
         res.setHeader(
