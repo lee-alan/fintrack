@@ -2,7 +2,6 @@ import React from "react";
 import "../style/main.css";
 import "../style/dashboard.css";
 import ExpenseDash from "../components/dashboard/expenseOverview";
-import InvestDash from "../components/dashboard/investmentsOverview";
 import NewsDash from "../components/dashboard/newsOverview";
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
@@ -60,11 +59,7 @@ export default function DashBoard(props) {
   const [expDashClass, setExpDashClass] = React.useState(
     clsx(classes.fixedHeight, classes.dash_item)
   );
-  const [invDashClass, setInvDashClass] = React.useState(
-    clsx(classes.dash_item, classes.fixedHeight)
-  );
   const [expExpanded, setExpExpanded] = React.useState(false);
-  const [invExpanded, setInvExpanded] = React.useState(false);
 
   const expandExpDash = () => {
     let cl = !expExpanded
@@ -72,14 +67,6 @@ export default function DashBoard(props) {
       : clsx(classes.fixedHeight, classes.dash_item);
     setExpDashClass(cl);
     setExpExpanded(!expExpanded);
-  };
-
-  const expandInvDash = () => {
-    let cl = !invExpanded
-      ? clsx(classes.expandedDashItem)
-      : clsx(classes.fixedHeight, classes.dash_item);
-    setInvDashClass(cl);
-    setInvExpanded(!invExpanded);
   };
 
   return (
@@ -93,14 +80,6 @@ export default function DashBoard(props) {
             onClick={expandExpDash}
           >
             <ExpenseDash user={user} expanded={expExpanded} />
-          </Paper>
-        </div>
-        <div className={invDashClass}>
-          <Paper
-            className={clsx(classes.paper, classes.hover_paper)}
-            onClick={expandInvDash}
-          >
-            <InvestDash user={user} expanded={invExpanded} />
           </Paper>
         </div>
       </Container>

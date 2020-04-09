@@ -98,6 +98,8 @@ export default function NewsDash(props) {
                       href={article.url}
                       className={classes.itemTitle}
                       title={util.formatDate(new Date(article.publishedAt))}
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
                       <div>{article.title}</div>
                     </a>
