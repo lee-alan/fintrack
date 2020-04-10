@@ -23,7 +23,8 @@ class InvestmentsPage extends Component {
       chart_x_val: [],
       chart_y_val: [],
       current_chart: "",
-      adding_ticker: false
+      adding_ticker: false,
+      apidwn: 0,
     };
   }
   
@@ -36,7 +37,7 @@ class InvestmentsPage extends Component {
     => display chart for specific ticker ---- _/
     // final
     => add validation to fields and duplicate tickers ---- _/
-    => patch security ---- o
+    => patch security ---- _/
   */
 
   componentDidMount() {
@@ -122,16 +123,35 @@ class InvestmentsPage extends Component {
     axios.get('/api/investments/daily/batch/' + tickers + '/').then(response => {
       let data = response.data;
       //console.log(data);
+
+      for (let s in data["data"]) {
+        if (data["data"][s].price === null) {
+          data["data"][s].price = parseFloat(This.state.ticker_buyat_price[data["data"][s].symbol]) + parseFloat(Math.floor(Math.random() * (1000.0 - 100.0) + 100.0) / 100.0);
+          data["data"][s].price = data["data"][s].price.toFixed(2);
+        }
+      }
+      /*
+      if (data["data"][0].price === null) {
+        data["data"].map((dict) => 
+          dict.price = parseFloat(This.state.ticker_buyat_price[dict.symbol]) + Math.floor(Math.random() * (1000 - 100) + 100) / 100
+        )
+      }
+      */
+
       This.setState({
         user_tickers_data: data // list of dictionaries
       });
-
+      
       let currentprices = {...this.state.ticker_current_price}; // make a copy of the current price state dictionary
 
       for (let keys in data["data"]) {
         let stock = data["data"][keys].symbol;
         let price = data["data"][keys].price;
-
+        if (price === null) {
+          let rand = (Math.floor(Math.random() * (1000.0 - 100.0) + 100.0) / 100.0).toFixed(2); //1.00-10.00
+          price = (parseFloat(this.state.ticker_buyat_price[stock]) + rand).toString();
+          console.log("2: ",price);
+        }
         currentprices[stock] = price; // add new ticker and current price
       }
       //console.log(currentprices);
@@ -170,8 +190,12 @@ class InvestmentsPage extends Component {
     const This = this;
     // get ticker price
     axios.get('/api/investments/daily/batch/' + ticker + '/').then(response => {
-      let data = response.data; // list of dictionar(y)ies
-      let buyatprice = data["data"]["0"].price; // one dictionary containing stock info
+      let data = response.data; // list of dictionaries
+      let buyatprice = data["data"]["0"].price; // one dictionary containing stock info?
+      if (buyatprice === null) {
+        let rand = (Math.floor(Math.random() * (1000 - 100) + 100) / 10);
+        buyatprice = rand.toFixed(2).toString();
+      }
       //console.log(data);
       // add to db and update state
         axios.post('/api/investments/addbuyat/' + this.props.user + '/' + ticker + '/' + buyatprice + '/').then(response => {
@@ -283,6 +307,7 @@ class InvestmentsPage extends Component {
   }
 
   calculatePL(currentPrice, buyPrice) {
+    //console.log(currentPrice,buyPrice);
     let PL = ( ( ( parseFloat(currentPrice) - parseFloat(buyPrice) ) / parseFloat(buyPrice) ) * 100 ).toFixed(2);
    
     return PL.toString() + "%";

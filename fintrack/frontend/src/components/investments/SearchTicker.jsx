@@ -1,6 +1,8 @@
 /* jshint esversion: 6 */
 import React, { Component } from 'react';
 import { STOCK1, STOCK2, STOCK3, STOCK4, STOCK5, STOCK6, STOCK7 } from './StockValidationList';
+import TextField from "@material-ui/core/TextField";
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 class SearchTicker extends Component {
     constructor(props) {
@@ -8,14 +10,25 @@ class SearchTicker extends Component {
         this.state = {
           ticker: "",
           qty: "",
+          errorTicker: false,
         };
     }
     
     handlerFormSubmit(event) {
         event.preventDefault();
-        this.props.onSearch(this.state.ticker, this.state.qty); // do search
-        this.setState({ticker: ""}); // reset
-        this.setState({qty: ""}); // reset
+        const eq = ((ticker) => ticker === this.state.ticker.toUpperCase());
+
+        if (STOCK1.find(eq) || STOCK2.find(eq) || STOCK3.find(eq) || 
+            STOCK4.find(eq) || STOCK5.find(eq) || STOCK6.find(eq) || STOCK7.find(eq)) {
+            
+            this.props.onSearch(this.state.ticker, this.state.qty); // do search
+            this.setState({ticker: ""}); // reset
+            this.setState({qty: ""}); // reset
+        } else {
+            this.setState({
+                errorTicker: true
+            });
+        }
     }
 
     render() { 
@@ -84,13 +97,15 @@ class SearchTicker extends Component {
         
         return (
         <form className='search_bar' onSubmit={this.handlerFormSubmit.bind(this)}>
-            <input
-                name='ticker'
-                type='text'
-                className='search_ticker'
-                value={this.state.ticker}
-                onChange={event => this.setState({ticker: event.target.value})}
-                placeholder='Enter Ticker'
+            <TextField
+            error={this.state.errorTicker}
+            className='search_ticker'
+            id="ticker_search"
+            label="ticker"
+            variant="outlined"
+            value={this.state.ticker}
+            type="text"
+            onChange={event => this.setState({ticker: event.target.value, errorTicker: false})}
             />
             <input
                 name='qty'
@@ -104,6 +119,11 @@ class SearchTicker extends Component {
             <span className="search_btn">
                 <button type='submit' id='btn_search' className='btn_search'>Buy</button>
             </span>
+            {this.state.errorTicker ? (
+                <FormHelperText>Ticker not Supported</FormHelperText>
+            ) : (
+                ""
+            )}
             <div id="filtered_tickers">
                 {filteredTickers.map((ticker,i) => <li key={i}>{ticker}</li>)}
             </div>
@@ -111,5 +131,14 @@ class SearchTicker extends Component {
         );
     }
 }
-
+/*
+<input
+    name='ticker'
+    type='text'
+    className='search_ticker'
+    value={this.state.ticker}
+    onChange={event => this.setState({ticker: event.target.value})}
+    placeholder='Enter Ticker'
+/>
+*/
 export default SearchTicker;

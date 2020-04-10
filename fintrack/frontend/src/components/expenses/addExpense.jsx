@@ -195,6 +195,23 @@ export default function AddExpenseDialog(props) {
 
     setLoading(true);
 
+    if (props.id){
+      axios
+        .patch("/api/expense/".concat(props.id), d)
+        .then(response => {
+          if (response.status === 200) {
+            handleClose();
+            onAdd();
+          }
+        })
+        .catch(error => {
+          console.log("Error: ", error.response);
+          setError({
+            error: error.response.data.error
+          });
+        });
+
+    }else{
     axios
       .post("/api/expense", d)
       .then(response => {
@@ -209,6 +226,7 @@ export default function AddExpenseDialog(props) {
           error: error.response.data.error
         });
       });
+    }
   };
 
   const formObject = loading ? (

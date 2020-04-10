@@ -75,7 +75,7 @@ const MenuProps = {
 export default function ExpenseFilter(props) {
   const { onSubmit } = props;
   const [open, setOpen] = React.useState(false);
-  const [startDate, setStartDate] = React.useState(util.getFirstDayOfMonth);
+  const [startDate, setStartDate] = React.useState(util.getFirstDayOfMonth());
   const [endDate, setEndDate] = React.useState(new Date());
   const [categorySelected, setCategorySelected] = React.useState([]);
   const [paymentSelected, setPaymentSelected] = React.useState([]);
@@ -96,6 +96,14 @@ export default function ExpenseFilter(props) {
 
   const changeType = event => {
     setType(event.target.value);
+  };
+
+  const filterReset = () => {
+    setStartDate(util.getFirstDayOfMonth());
+    setEndDate(new Date());
+    setCategorySelected([]);
+    setPaymentSelected([]);
+    setType("all");
   };
 
   const filterExpenses = () => {
@@ -268,7 +276,7 @@ export default function ExpenseFilter(props) {
         </ExpansionPanelDetails>
         <Divider />
         <ExpansionPanelActions>
-          <Button size="small">Clear</Button>
+          <Button size="small" onClick={filterReset}>Reset</Button>
           <Button size="small" color="primary" onClick={filterExpenses}>
             Filter
           </Button>
