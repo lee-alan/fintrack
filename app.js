@@ -21,10 +21,6 @@ app.use('/api/expense', expenses);
 app.use('/api/investments', stock);
 app.use('/api/news', news);
 
-// to catch any other path and return 404
-app.use(function (req, res) {
-    res.status(404).send("Sorry can't find that in Fintrack api!");
-});
 //To catch the invalid paths that need redirection
 app.use('/signup', (req, res) => {
     res.redirect('/');
@@ -46,6 +42,11 @@ app.use('/investments', (req, res) => {
 });
 app.use('/about', (req, res) => {
     res.redirect('/');
+});
+
+// to catch any other path and return 404
+app.use(function (req, res) {
+    res.status(404).send("Sorry can't find that in Fintrack api!");
 });
 
 
