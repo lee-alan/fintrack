@@ -121,7 +121,7 @@ router.post(
 
             transporter.sendMail(mailOptions, function(error, info){
                 if (error) {
-                    res.json({'error': error})
+                    res.json({'error': error});
                 } else {
                     res.json({"success": 'Email sent: ' + info.response});
                 }

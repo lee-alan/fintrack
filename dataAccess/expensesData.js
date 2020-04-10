@@ -53,7 +53,7 @@ exports.get_expenses_sum = async (page_number, page_limit, username, categories,
     const array = await executeQuery(db, async (db) => await db.collection(expenses_collection).find(
         {username: username, payment_type: { $nin: ignore_payment_types}, category: { $nin: ignore_categories}, type: { $nin: ignore_types}, date: {"$gte": start, "$lte": end}}).sort({date: -1}).skip(skips).limit(page_limit).toArray());
     let sum = 0;
-    array.forEach(item => {sum = sum + item.amount});
+    array.forEach(item => {sum = sum + item.amount;});
     return sum;
 };
 
@@ -80,6 +80,6 @@ exports.get_expenses_sum_month = async (username, month, page_number, page_limit
     let array = await executeQuery(db, async (db) => await db.collection(expenses_collection).find(
         { "$expr": { $and: [{"$eq": [{ "$month": "$date"}, month]}, {"$eq": [{ "$year": "$date"}, new Date().getFullYear()]}]}, username: username, payment_type: { $nin: ignore_payment_types}, category: { $nin: ignore_categories}, type: { $nin: ignore_types}}).sort({date: -1}).skip(skips).limit(page_limit).toArray());
     let sum = 0;
-    array.forEach(item => {sum = sum + item.amount});
+    array.forEach(item => {sum = sum + item.amount;});
     return sum;
 };
