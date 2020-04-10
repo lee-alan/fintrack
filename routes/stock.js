@@ -22,16 +22,16 @@ const uri = "mongodb+srv://Alan_C09:mongodb1@cluster0-jfjzg.gcp.mongodb.net/test
 
 /**
 Init Alphavantage
-Alphavantage API Key : 2A83RBS24CKPREWG
+Alphavantage API Key : 2A83RBS24CKPREWG, CVVDSGOLST7W6SZ4
 */
-let API_KEY = "2A83RBS24CKPREWG";
+let API_KEY = "CVVDSGOLST7W6SZ4";
 const alpha = require('alphavantage')({ key: API_KEY });
 
 /**
 Init WorldTradingData
-WorldTradingData API Key : cQZoKjrCeM438kbgIcDO2pdPz34L7HhIhOLrI002332JrsnlzcbrLXDeycit
+WorldTradingData API Key : NgGRGvI3FSDXvI0TisOzKMBndl3coJPF0hOMbeaIPAoC6arI65SSI70PdehG
 */
-let WTD_API_KEY = "cQZoKjrCeM438kbgIcDO2pdPz34L7HhIhOLrI002332JrsnlzcbrLXDeycit";
+let WTD_API_KEY = "NgGRGvI3FSDXvI0TisOzKMBndl3coJPF0hOMbeaIPAoC6arI65SSI70PdehG";
 
 // add user authentication later ->
 /*
@@ -42,13 +42,8 @@ app.use(function (req, res, next){
 });
 */
 
-const isAuthenticated = function(req, res, next) {
-    if (!req.session.username) return res.status(401).end("access denied");
-    next();
-};
-
 // fetch qty : dictionary of {ticker: qty}
-app.get("/getQty/:username/", isAuthenticated, function (req, res) {
+app.get("/getQty/:username/", function (req, res) {
     let username = req.params.username;
     const client = new MongoClient(uri, { useNewUrlParser: true });
     
@@ -67,8 +62,9 @@ app.get("/getQty/:username/", isAuthenticated, function (req, res) {
    
 });
 
+
 // fetch buyatprice : dictionary of {ticker: buy at price}
-app.get("/getBuyAt/:username/", isAuthenticated, function (req, res) {
+app.get("/getBuyAt/:username/", function (req, res) {
     let username = req.params.username;
     const client = new MongoClient(uri, { useNewUrlParser: true });
     
@@ -88,7 +84,7 @@ app.get("/getBuyAt/:username/", isAuthenticated, function (req, res) {
 });
 
 // fetch all ticker symbols for given user
-app.get("/getTickers/:username/",isAuthenticated, function (req, res) {
+app.get("/getTickers/:username/", function (req, res) {
     let username = req.params.username;
     const client = new MongoClient(uri, { useNewUrlParser: true });
     
@@ -107,7 +103,7 @@ app.get("/getTickers/:username/",isAuthenticated, function (req, res) {
 });
 
 // fetch time_series_intraday data for given ticker symbol
-app.get("/intraday/:ticker/", isAuthenticated, function (req, res) {
+app.get("/intraday/:ticker/", function (req, res) {
     let ticker = req.params.ticker;
 	alpha.data.intraday(ticker, outputsize="compact").then(data => {
         console.log(data);
@@ -124,7 +120,7 @@ app.get("/daily/:ticker/", function (req, res) {
 });
 
 // fetch batch time_series_daily data for given ticker symbols "a,b,c"
-app.get("/daily/batch/:tickers/", isAuthenticated, function (req, res) {
+app.get("/daily/batch/:tickers/", function (req, res) {
     let tickers = req.params.tickers;
     console.log("user tickers:", tickers);
 	axios.get('https://api.worldtradingdata.com/api/v1/stock?symbol=' + tickers + '&api_token=' + WTD_API_KEY).then(response => {
@@ -134,7 +130,7 @@ app.get("/daily/batch/:tickers/", isAuthenticated, function (req, res) {
 });
 
 // add a ticker for a user
-app.post("/addticker/:username/:ticker/", isAuthenticated, function (req, res) {
+app.post("/addticker/:username/:ticker/", function (req, res) {
     let username = req.params.username;
     let ticker = req.params.ticker;
     const client = new MongoClient(uri, { useNewUrlParser: true });
@@ -153,7 +149,7 @@ app.post("/addticker/:username/:ticker/", isAuthenticated, function (req, res) {
 });
 
 // add ticker qty for a user
-app.post("/addqty/:username/:ticker/:qty", isAuthenticated, function (req, res) {
+app.post("/addqty/:username/:ticker/:qty", function (req, res) {
     let username = req.params.username;
     let add = {};
     add[req.params.ticker] = req.params.qty;
@@ -174,7 +170,7 @@ app.post("/addqty/:username/:ticker/:qty", isAuthenticated, function (req, res) 
 });
 
 // add ticker buy-at price for a user
-app.post("/addbuyat/:username/:ticker/:price", isAuthenticated, function (req, res) {
+app.post("/addbuyat/:username/:ticker/:price", function (req, res) {
     let username = req.params.username;
     let add = {};
     add[req.params.ticker] = req.params.price;
@@ -195,7 +191,7 @@ app.post("/addbuyat/:username/:ticker/:price", isAuthenticated, function (req, r
 });
 
 // remove a ticker for a user
-app.delete("/removeticker/:username/:ticker/", isAuthenticated, function (req, res) {
+app.delete("/removeticker/:username/:ticker/", function (req, res) {
     let username = req.params.username;
     let ticker = req.params.ticker;
     const client = new MongoClient(uri, { useNewUrlParser: true });

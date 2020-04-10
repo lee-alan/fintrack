@@ -8,6 +8,7 @@ import axios from "axios";
 import Plotly from "plotly.js-basic-dist";
 import createPlotlyComponent from "react-plotly.js/factory";
 import NumberFormat from 'react-number-format';
+import FormHelperText from "@material-ui/core/FormHelperText";
 
 const Plot = createPlotlyComponent(Plotly);
 
@@ -25,6 +26,7 @@ class InvestmentsPage extends Component {
       current_chart: "",
       adding_ticker: false,
       apidwn: 0,
+      errorMaxLimit: false,
     };
   }
   
@@ -126,8 +128,9 @@ class InvestmentsPage extends Component {
 
       for (let s in data["data"]) {
         if (data["data"][s].price === null) {
-          data["data"][s].price = parseFloat(This.state.ticker_buyat_price[data["data"][s].symbol]) + parseFloat(Math.floor(Math.random() * (1000.0 - 100.0) + 100.0) / 100.0);
-          data["data"][s].price = data["data"][s].price.toFixed(2);
+          let val = parseFloat(This.state.ticker_buyat_price[data["data"][s].symbol]) + parseFloat(Math.floor(Math.random() * (1000.0 - 100.0) + 100.0) / 100.0);
+          data["data"][s].price = val.toFixed(2);
+          //console.log("4: ", This.state.ticker_buyat_price);
         }
       }
       /*
@@ -147,14 +150,16 @@ class InvestmentsPage extends Component {
       for (let keys in data["data"]) {
         let stock = data["data"][keys].symbol;
         let price = data["data"][keys].price;
+        //console.log("3: ", price);
         if (price === null) {
-          let rand = (Math.floor(Math.random() * (1000.0 - 100.0) + 100.0) / 100.0).toFixed(2); //1.00-10.00
-          price = (parseFloat(this.state.ticker_buyat_price[stock]) + rand).toString();
-          console.log("2: ",price);
+          let rand = (Math.floor(Math.random() * (1000.0 - 100.0) + 100.0) / 100.0); //1.00-10.00
+          //console.log("2: ", parseFloat(this.state.ticker_buyat_price[stock]), parseFloat(rand));
+          price = (parseFloat(this.state.ticker_buyat_price[stock]) + parseFloat(rand));
+          price = price.toFixed(2).toString();
         }
         currentprices[stock] = price; // add new ticker and current price
       }
-      //console.log(currentprices);
+      //console.log("current prices: ",currentprices);
       This.setState({
         ticker_current_price: currentprices,
       });
@@ -195,6 +200,7 @@ class InvestmentsPage extends Component {
       if (buyatprice === null) {
         let rand = (Math.floor(Math.random() * (1000 - 100) + 100) / 10);
         buyatprice = rand.toFixed(2).toString();
+        //console.log("1:", buyatprice);
       }
       //console.log(data);
       // add to db and update state
@@ -203,7 +209,7 @@ class InvestmentsPage extends Component {
           tickerbuyat[ticker] = buyatprice; // add new ticker and buy-at price
           This.setState({
             ticker_buyat_price: tickerbuyat,
-          });
+          }, this.getChartingDataBatch());
       });
     })
   }
@@ -240,7 +246,7 @@ class InvestmentsPage extends Component {
         });
 
         // fetch new data for all tickers and update state
-        this.getChartingDataBatch();
+        //this.getChartingDataBatch();
         this.getChartingDataSingleTicker(ticker);
         
         This.setState({
@@ -269,6 +275,7 @@ class InvestmentsPage extends Component {
       This.setState({
         ticker_qty: tickerqty,
         user_tickers: usertickers,
+        errorMaxLimit: false,
       });
 
       if (this.state.user_tickers.length !== 0) {
@@ -301,16 +308,26 @@ class InvestmentsPage extends Component {
   }
 
   handleSearch(ticker, qty) {
-    let t = ticker.toUpperCase();
-    qty = qty.toString();
-    this.addTicker(t, qty);
+    if (this.state.user_tickers.length < 4) {
+      //console.log(this.state.user_tickers.length, this.state.user_tickers);
+      let t = ticker.toUpperCase();
+      qty = qty.toString();
+      this.setState({
+        errorMaxLimit: false
+      });
+      this.addTicker(t, qty);
+    } else {
+      this.setState({
+        errorMaxLimit: true
+      });
+    }
   }
 
   calculatePL(currentPrice, buyPrice) {
     //console.log(currentPrice,buyPrice);
-    let PL = ( ( ( parseFloat(currentPrice) - parseFloat(buyPrice) ) / parseFloat(buyPrice) ) * 100 ).toFixed(2);
+    let PL = ( ( ( parseFloat(currentPrice) - parseFloat(buyPrice) ) / parseFloat(buyPrice) ) * 100 );
    
-    return PL.toString() + "%";
+    return PL.toFixed(2).toString() + "%";
   }
 
   render() {
@@ -334,6 +351,11 @@ class InvestmentsPage extends Component {
         
         <div id="ticker_component" style={{textAlign: 'center'}}>
           <SearchTicker onSearch={this.handleSearch.bind(this)} />
+          {this.state.errorMaxLimit ? (
+                <FormHelperText>Due to Free-Tier API limitations, cannot track more than 4 stocks at a time</FormHelperText>
+            ) : (
+                ""
+          )}
           <Loading loading={this.state.adding_ticker}/>
           {this.state.user_tickers_data.data.map((dict) =>
             <div key={dict.symbol + "_+"}>
@@ -354,8 +376,5 @@ class InvestmentsPage extends Component {
     );
   }
 }
-/*
-   
-*/
 
 export default InvestmentsPage;
