@@ -5,7 +5,6 @@ let expenses = require('./routes/expenses.js');
 let stock = require('./routes/stock.js');
 let news = require('./routes/news.js');
 const PORT = process.env.PORT || 5000;
-
 const session = require('express-session');
 
 app.use(session({
