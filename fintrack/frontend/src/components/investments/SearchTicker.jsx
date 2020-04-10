@@ -12,6 +12,7 @@ class SearchTicker extends Component {
           qty: "",
           errorTicker: false,
         };
+        this.selectTicker.bind(this);
     }
     
     handlerFormSubmit(event) {
@@ -29,6 +30,10 @@ class SearchTicker extends Component {
                 errorTicker: true
             });
         }
+    }
+
+    selectTicker(tckr){
+        this.setState({ticker: tckr});
     }
 
     render() { 
@@ -125,7 +130,7 @@ class SearchTicker extends Component {
                 ""
             )}
             <div id="filtered_tickers">
-                {filteredTickers.map((ticker,i) => <li key={i}>{ticker}</li>)}
+                {filteredTickers.map((ticker,i) => <li key={i} onClick={() => this.selectTicker(ticker)} style={{cursor: "pointer"}}>{ticker}</li>)}
             </div>
         </form>
         );
