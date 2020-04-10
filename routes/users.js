@@ -22,6 +22,12 @@ const {
   validate
 } = require("../utilities/inputValidator");
 
+const isAuthenticated = function(req, res, next) {
+    if (!req.session.username) return res.status(401).end("access denied");
+    next();
+};
+
+
 const router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
 router.use(bodyParser.json());
@@ -234,7 +240,7 @@ router.post("/signout", function(req, res) {
 });
 //update Salary of a user
 router.patch(
-  "/profile/salary",
+  "/profile/salary", isAuthenticated,
   applyValidationRules("/profile/salary"),
   validate,
   async function(req, res) {
@@ -255,7 +261,7 @@ router.patch(
 );
 //Update email of a user
 router.patch(
-  "/profile/email",
+  "/profile/email", isAuthenticated,
   applyValidationRules("/profile/email"),
   validate,
   async function(req, res) {
@@ -275,6 +281,7 @@ router.patch(
 );
 //Update password of a user
 router.patch("/profile/password",
+    isAuthenticated,
     applyValidationRules("/profile/password"),
     validate,
     async function(req, res) {
@@ -314,7 +321,7 @@ router.patch("/profile/password",
 
 //get user info by username
 
-router.get('/info/:username', async function(req, res){
+router.get('/info/:username', isAuthenticated, async function(req, res){
     let result = await find_user_by_username(req.params.username);
     if(result){
         delete result._id; delete result.password; delete result.salt; delete result.tickers;

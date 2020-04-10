@@ -10,8 +10,14 @@ const {
     validate
 } = require("../utilities/inputValidator");
 
+const isAuthenticated = function(req, res, next) {
+    if (!req.session.username) return res.status(401).end("access denied");
+    next();
+};
+
+
 //create a new expense
-router.post('/',applyValidationRules("create expense"), validate, async function (req, res) {
+router.post('/', isAuthenticated, applyValidationRules("create expense"), validate, async function (req, res) {
     console.log('POST path /expense/');
     const expense = {
         username: req.body.username,
@@ -30,7 +36,7 @@ router.post('/',applyValidationRules("create expense"), validate, async function
 });
 
 //Update expense:
-router.patch('/:id',applyValidationRules("update expense"), validate, async function (req, res) {
+router.patch('/:id', isAuthenticated, applyValidationRules("update expense"), validate, async function (req, res) {
     console.log('Patch path /expense/');
     const id = req.params.id;
     const fields = {
@@ -50,13 +56,14 @@ router.patch('/:id',applyValidationRules("update expense"), validate, async func
     return res.status(500).json({error: "Internal server error"});
 });
 //retrieve the expense by id
-router.get('/:id',  async function (req, res) {
+
+router.get('/:id', isAuthenticated, async function (req, res) {
     console.log('GET path /api/expense/:id');
     const expense = await get_expense_by_id(req.params.id);
-    if(expense){
+    if(expense && req.session.username === expense.username){
         return res.status(200).json(expense);
     }
-    return res.status(404).json({error:`An expense with id ${req.query.id} not found`});
+    return res.status(404).json({error:`An expense with id ${req.query.id} not found or you have no access to it`});
 });
 
 // retrieve the expenses from page*limit to page*limit +1
@@ -72,7 +79,7 @@ router.get('/:id',  async function (req, res) {
 
 //retrieve expenses by start and end date
 // retrieve the expenses from page*limit to page*limit +1
-router.get('/multiple/:username', applyValidationRules("get expenses"), validate,async function (req, res) {
+router.get('/multiple/:username', isAuthenticated, applyValidationRules("get expenses"), validate,async function (req, res) {
     console.log('GET path /api/expense/multiple/:username');
     const username = req.params.username;
     const page_number = parseInt(req.query.page_number);
@@ -98,7 +105,7 @@ router.get('/multiple/:username', applyValidationRules("get expenses"), validate
 
 
 
-router.get('/multiple-sum/:username', applyValidationRules("get expenses sum"), validate,async function (req, res) {
+router.get('/multiple-sum/:username', isAuthenticated, applyValidationRules("get expenses sum"), validate,async function (req, res) {
     console.log('GET path /api/expense/multiple-sum/:username');
     const username = req.params.username;
     const page_number = parseInt(req.query.page_number);
@@ -121,7 +128,7 @@ router.get('/multiple-sum/:username', applyValidationRules("get expenses sum"), 
 });
 
 //retrieve the expenses from page*limit to page*limit +1 in specific month
-router.get('/multiple/:username/:month', applyValidationRules("get expenses by month"), validate, async function (req, res) {
+router.get('/multiple/:username/:month', isAuthenticated, applyValidationRules("get expenses by month"), validate, async function (req, res) {
     console.log('GET path /api/expense/multiple/:username/:month');
     const month = parseInt(req.params.month);
     const year = parseInt(req.params.year);
@@ -135,7 +142,7 @@ router.get('/multiple/:username/:month', applyValidationRules("get expenses by m
     res.status(200).json(result);
 });
 
-router.get('/multiple-sum/:username/:month', applyValidationRules("get expenses sum by month"), validate, async function (req, res) {
+router.get('/multiple-sum/:username/:month', isAuthenticated, applyValidationRules("get expenses sum by month"), validate, async function (req, res) {
     console.log('GET path /api/expense/multiple/:username/:month');
     const month = parseInt(req.params.month);
     const year = parseInt(req.params.year);
@@ -150,7 +157,7 @@ router.get('/multiple-sum/:username/:month', applyValidationRules("get expenses 
 });
 
 // delete the expense by id and all associated comments
-router.delete('/:id', async function (req, res) {
+router.delete('/:id', isAuthenticated, async function (req, res) {
     console.log('DELETE path /api/expense/:id');
     const result = await delete_expense(req.params.id);
     if(result.deletedCount){
