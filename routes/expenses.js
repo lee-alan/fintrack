@@ -50,7 +50,7 @@ router.patch('/:id',applyValidationRules("update expense"), validate, async func
     return res.status(500).json({error: "Internal server error"});
 });
 //retrieve the expense by id
-router.get('/:id', async function (req, res) {
+router.get('/:id',  async function (req, res) {
     console.log('GET path /api/expense/:id');
     const expense = await get_expense_by_id(req.params.id);
     if(expense){
