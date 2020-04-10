@@ -22,6 +22,28 @@ app.use('/api/investments', stock);
 app.use('/api/news', news);
 
 // to catch any other path and return 404
+app.use('/signup', (req, res) => {
+    res.redirect('/');
+});
+app.use('/login', (req, res) => {
+    res.redirect('/');
+});
+app.use('/dashboard', (req, res) => {
+    res.redirect('/');
+});
+app.use('/profile', (req, res) => {
+    res.redirect('/');
+});
+app.use('/expenses', (req, res) => {
+    res.redirect('/');
+});
+app.use('/investments', (req, res) => {
+    res.redirect('/');
+});
+app.use('/about', (req, res) => {
+    res.redirect('/');
+});
+
 app.use(function (req, res) {
     res.status(404).send("Sorry can't find that in Fintrack api!")
 });
