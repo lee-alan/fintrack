@@ -6,6 +6,18 @@
 - --Alan Lee, 1002492965, leealan1
 - --Ubaydullo Rustami, 1006631879, rustamiu
 
+Final Product
+---
+App url: https://www.fintrack.me/ \
+Documentation: [Docs](api/doc/README.md) \
+Video Link: https://youtu.be/CCtHCdwPQXI \
+
+Original Long Video: https://youtu.be/hI1__-X_9s4\
+Longer video but goes more in detail
+
+Limitation of App:
+---
+
 **Description:**
 
 Our web app is going to be a personal finance tracker, where you can track credit card bills and other expenses. It will be an easy way to keep track of your money and where it&#39;s going. Also, it will help you plan for the future and set aside savings. Additionally, you will be able to keep track of your investments in the stock market and the app will update how much money you made from them or how much you lost.
