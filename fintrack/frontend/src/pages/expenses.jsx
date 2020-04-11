@@ -62,6 +62,7 @@ export default function ExpensePage(props) {
       axios
         .get(currentQuery)
         .then((response) => {
+          //console.log(response.data);
           setRows(response.data.map(createData));
           setLoadRows(false);
         })

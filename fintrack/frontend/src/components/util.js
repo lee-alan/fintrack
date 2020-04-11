@@ -75,6 +75,7 @@ class Util {
   }
 
   formatDateAPI(date) {
+    /*
     let st = "";
     if (date.getMonth() + 1 < 10) {
       st = st.concat("0");
@@ -86,6 +87,8 @@ class Util {
     st = st.concat(date.getDate(), "/");
 
     return st.concat(date.getFullYear());
+    */
+   return date.toISOString();
   }
 
   firstLetterUpper(word) {
