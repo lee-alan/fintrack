@@ -13,6 +13,11 @@ const {
     validate
 } = require("../utilities/inputValidator");
 
+const isAuthenticated = function(req, res, next) {
+    if (!req.session.username) return res.status(401).end("access denied");
+    next();
+};
+
 /**
 Init Mongodb
 Admin Credentials: Alan_C09, mongodb1
@@ -43,7 +48,7 @@ app.use(function (req, res, next){
 */
 
 // fetch qty : dictionary of {ticker: qty}
-app.get("/getQty/:username/", function (req, res) {
+app.get("/getQty/:username/", isAuthenticated, function (req, res) {
     let username = req.params.username;
     const client = new MongoClient(uri, { useNewUrlParser: true });
     
@@ -64,7 +69,7 @@ app.get("/getQty/:username/", function (req, res) {
 
 
 // fetch buyatprice : dictionary of {ticker: buy at price}
-app.get("/getBuyAt/:username/", function (req, res) {
+app.get("/getBuyAt/:username/", isAuthenticated, function (req, res) {
     let username = req.params.username;
     const client = new MongoClient(uri, { useNewUrlParser: true });
     
@@ -84,7 +89,7 @@ app.get("/getBuyAt/:username/", function (req, res) {
 });
 
 // fetch all ticker symbols for given user
-app.get("/getTickers/:username/", function (req, res) {
+app.get("/getTickers/:username/", isAuthenticated, function (req, res) {
     let username = req.params.username;
     const client = new MongoClient(uri, { useNewUrlParser: true });
     
@@ -130,7 +135,7 @@ app.get("/daily/batch/:tickers/", function (req, res) {
 });
 
 // add a ticker for a user
-app.post("/addticker/:username/:ticker/", function (req, res) {
+app.post("/addticker/:username/:ticker/", isAuthenticated, function (req, res) {
     let username = req.params.username;
     let ticker = req.params.ticker;
     const client = new MongoClient(uri, { useNewUrlParser: true });
@@ -149,7 +154,7 @@ app.post("/addticker/:username/:ticker/", function (req, res) {
 });
 
 // add ticker qty for a user
-app.post("/addqty/:username/:ticker/:qty", function (req, res) {
+app.post("/addqty/:username/:ticker/:qty", isAuthenticated, function (req, res) {
     let username = req.params.username;
     let add = {};
     add[req.params.ticker] = req.params.qty;
@@ -170,7 +175,7 @@ app.post("/addqty/:username/:ticker/:qty", function (req, res) {
 });
 
 // add ticker buy-at price for a user
-app.post("/addbuyat/:username/:ticker/:price", function (req, res) {
+app.post("/addbuyat/:username/:ticker/:price", isAuthenticated, function (req, res) {
     let username = req.params.username;
     let add = {};
     add[req.params.ticker] = req.params.price;
@@ -191,7 +196,7 @@ app.post("/addbuyat/:username/:ticker/:price", function (req, res) {
 });
 
 // remove a ticker for a user
-app.delete("/removeticker/:username/:ticker/", function (req, res) {
+app.delete("/removeticker/:username/:ticker/", isAuthenticated, function (req, res) {
     let username = req.params.username;
     let ticker = req.params.ticker;
     const client = new MongoClient(uri, { useNewUrlParser: true });
