@@ -17,6 +17,10 @@ Longer video but goes more in detail
 
 Limitation of App:
 ---
+- Track up to 4 stocks at a time due to free-tier API limitations
+- App uses two stock APIs due to each having their own free-tier limitations (i.e. one of them allows only 4 requests/minute, 1 stock request per call, etc.)
+- Stock API we use only covers stocks listed on: NYSE, TSX, NIKKEI, HKEX, Euronext Paris (Bourse), SSE, SZSE, +other indices such as ^DJI
+- If stock API is not working, stock data on investments page will instead be pulled from pseudocaching
 
 **Description:**
 
@@ -39,13 +43,14 @@ Our web app is going to be a personal finance tracker, where you can track credi
 
 **Technologies we will use:**
 
-- --React?
+- --React
 - --Mongodb
 - --Node.js
 - --TypeScript
 - --Google authenticator
 - --APIs:
   - --Stock data: alphavantange api [https://www.alphavantage.co/documentation/](https://www.alphavantage.co/documentation/)
+  - --WorldTradingData
   - --Charting data: tradingview.com
 
 **Technical Challenges:**
