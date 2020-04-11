@@ -10,9 +10,9 @@ Final Product
 ---
 App url: https://www.fintrack.me/ \
 Documentation: [Docs](api/doc/README.md) \
-Video Link: https://youtu.be/CCtHCdwPQXI \
+Video Link: https://youtu.be/CCtHCdwPQXI 
 
-Original Long Video: https://youtu.be/hI1__-X_9s4\
+Original Long Video: [here](https://youtu.be/hI1__-X_9s4) \
 Longer video but goes more in detail
 
 Limitation of App:
