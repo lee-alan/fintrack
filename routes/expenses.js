@@ -99,6 +99,7 @@ router.get('/multiple/:username', isAuthenticated, applyValidationRules("get exp
     end = new Date(end);
     console.log(start, end);
     const result = await get_expenses(page_number, page_limit, username, categories, payment_types, types, start, end);
+    result.forEach(item => {return console.log(item.date)});
     res.status(200).json(result);
 });
 
