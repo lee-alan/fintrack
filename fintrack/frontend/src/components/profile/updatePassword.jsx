@@ -134,7 +134,7 @@ export default function UpdatePasswordForm(props) {
       <CircularProgress />
     </div>
   ) : (
-    <form className={classes.root} onSubmit={handleSubmit}>
+    <form className={classes.root}>
       <TextField
         error={errorCurPass}
         id="oldPass"
@@ -186,7 +186,7 @@ export default function UpdatePasswordForm(props) {
             variant="contained"
             color="primary"
             startIcon={<SaveAltIcon />}
-            type="submit"
+            onClick={handleSubmit}
           >
             Save
           </Button>

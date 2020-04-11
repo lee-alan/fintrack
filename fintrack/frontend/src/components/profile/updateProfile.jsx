@@ -100,7 +100,7 @@ export default function UpdateProfileForm(props) {
       <CircularProgress />
     </div>
   ) : (
-    <form className={classes.root} onSubmit={handleSubmit}>
+    <form className={classes.root}>
       <div className={clsx(classes.prev, classes.rootItem)}>
         Current {field}:{" "}
         {prevVal ? (
@@ -133,7 +133,7 @@ export default function UpdateProfileForm(props) {
             variant="contained"
             color="primary"
             startIcon={<SaveAltIcon />}
-            type="submit"
+            onClick={handleSubmit}
           >
             Save
           </Button>
