@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 function createData(data) {
   return {
     id: data._id,
-    date: new Date(data.date.substring(0, 10)),
+    date: new Date(data.date),
     description: data.description,
     category: data.category,
     payment_type: data.payment_type,
@@ -52,7 +52,9 @@ export default function ExpensePage(props) {
       "&page_limit=",
       loadMax,
       "&payment_types=[]&categories=[]&types=[]&start=",
-      util.formatDateAPI(util.getFirstDayOfMonth())
+      util.formatDateAPI(util.getFirstDayOfMonth()),
+      "&end=",
+      util.formatDateAPI(new Date())
     )
   );
 
