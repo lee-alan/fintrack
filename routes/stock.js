@@ -95,7 +95,7 @@ app.get("/getTickers/:username/", function (req, res) {
 		db.collection("users").find({username: username }, {projection: {_id:0, tickers:1} }).toArray(function (err, result) {
             if (err) return res.status(500).end(err);
             if (!result) return res.json("no tickers");
-            console.log(result);
+            console.log("1:", result);
             client.close();
 			return res.json(result);
 		});

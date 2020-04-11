@@ -51,8 +51,8 @@ class InvestmentsPage extends Component {
   getTicker() {
     try {
       axios.get('/api/investments/getTickers/' + this.props.user + '/').then(response => {
-        
-        if (response !== "no tickers") {
+        console.log(response, response.data);
+        if (response !== "no tickers" && response.data[0].tickers) {
           const This = this;
           let first_ticker = response.data[0].tickers[0];
          
