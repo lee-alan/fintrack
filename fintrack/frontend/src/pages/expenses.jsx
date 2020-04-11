@@ -28,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
 function createData(data) {
   return {
     id: data._id,
-    date: new Date(data.date),
+    date: new Date(data.date.substring(0, 10)),
     description: data.description,
     category: data.category,
     payment_type: data.payment_type,
@@ -62,6 +62,7 @@ export default function ExpensePage(props) {
       axios
         .get(currentQuery)
         .then((response) => {
+          response.data.forEach((item) => {console.log(item.date.substring(0, 10))});
           setRows(response.data.map(createData));
           setLoadRows(false);
         })

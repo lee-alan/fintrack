@@ -41,7 +41,7 @@ exports.applyValidationRules = (endpoint) => {
                 check('username').isLength({min: 5}).withMessage("Invalid username"),
                 check('type').isIn(["income", "expense"]).withMessage("The type of the expense should be either income or expense"),
                 check('payment_type').isIn(["cash", "credit", "debit"]).withMessage("Te payment type should be cash, credit or debit"),
-                check('date').matches(/^((0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])[- /.](19|20)?[0-9]{2})*$/).withMessage("Invalid Date. Please follow this structure: mm/dd/yyyy.")
+                check('date').matches(/^((19|20)?[0-9]{2}[- /.](0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01]))/).withMessage("Invalid Date. Please follow this structure: yyyy/mm/dd and then time.")
             ];
         }
         case "update expense": {
@@ -53,15 +53,15 @@ exports.applyValidationRules = (endpoint) => {
         case "get expenses": {
             return [
                 check('username').isLength({min: 5}).withMessage("Invalid username"),
-                check('start').matches(/^((0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])[- /.](19|20)?[0-9]{2})*$/).withMessage("Invalid Date. Please follow this structure: mm/dd/yyyy."),
-                check('end').matches(/^((0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])[- /.](19|20)?[0-9]{2})*$/).withMessage("Invalid Date. Please follow this structure: mm/dd/yyyy.")
+                check('start').matches(/^((19|20)?[0-9]{2}[- /.](0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01]))/).withMessage("Invalid Date. Please follow this structure: yyyy/mm/dd and then time."),
+                check('end').matches(/^((19|20)?[0-9]{2}[- /.](0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01]))/).withMessage("Invalid Date. Please follow this structure: yyyy/mm/dd and then time.")
             ];
         }
         case "get expenses sum": {
             return [
                 check('username').isLength({min: 5}).withMessage("Invalid username"),
-                check('start').matches(/^((0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])[- /.](19|20)?[0-9]{2})*$/).withMessage("Invalid Date. Please follow this structure: mm/dd/yyyy."),
-                check('end').matches(/^((0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01])[- /.](19|20)?[0-9]{2})*$/).withMessage("Invalid Date. Please follow this structure: mm/dd/yyyy.")
+                check('start').matches(/^((19|20)?[0-9]{2}[- /.](0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01]))/).withMessage("Invalid Date. Please follow this structure: yyyy/mm/dd and then time."),
+                check('end').matches(/^((19|20)?[0-9]{2}[- /.](0?[1-9]|1[012])[- /.](0?[1-9]|[12][0-9]|3[01]))/).withMessage("Invalid Date. Please follow this structure: yyyy/mm/dd and then time.")
             ];
         }
 
