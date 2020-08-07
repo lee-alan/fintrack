@@ -1,19 +1,11 @@
 # Finance Tracker
 
-**Team Members** :
-
-- --Ram Gurram, 1002538621, gurramra
-- --Alan Lee, 1002492965, leealan1
-- --Ubaydullo Rustami, 1006631879, rustamiu
-
 Final Product
 ---
 App url: https://www.fintrack.me/ \
 Documentation: [Docs](api/doc/README.md) \
 Video Link: https://youtu.be/CCtHCdwPQXI 
 
-Original Long Video: [here](https://youtu.be/hI1__-X_9s4) \
-Longer video but goes more in detail
 
 Limitation of App:
 ---
